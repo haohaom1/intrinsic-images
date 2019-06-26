@@ -4,7 +4,9 @@ import os
 import sys
 import vec_noise
 import sys
-import matplotlib.pyplot as plt
+import matplotlib  
+matplotlib.use('TkAgg')   
+import matplotlib.pyplot as plt  
 import imageio
 
 # appends path to custom function
@@ -23,12 +25,15 @@ def main(argv):
         width = int(argv[2])
         height = int(argv[3])
     else:
-        width = 2400
-        height = 2400
+        width = 512
+        height = 512
 
-    for i in range(2):
+    for i in range(300):
         # image = None
         # generate greyscale first
+
+        gen_type = argv[1]
+
         if argv[1] == 'random':
             image = np.random.rand(width, height)
         elif argv[1] == 'perlin':
@@ -63,7 +68,7 @@ def main(argv):
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_amb', amb)
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_dir', direct)
         image = image.astype(np.float32) / 255
-        np.save('./imaps/test', image)
+        np.save(f'./imaps/{gen_type}{i}', image)
         
         # imageio.imwrite('./test/{}_{}.png'.format(argv[1], i), image)
         # imageio.imwrite('./test/{}_{}_amb.png'.format(argv[1], i), amb)
