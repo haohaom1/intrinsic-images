@@ -1,0 +1,16 @@
+# don't track these personal folders
+bruce/
+__pycache__/
+test/
+maan/
+
+
+# ignore notebooks
+*.ipynb
+**/.ipynb_checkpoints
+**/.vscode
+
+# don't upload test data
+*.png
+*.jpg
+*.npy
