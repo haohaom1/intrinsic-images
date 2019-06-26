@@ -14,3 +14,7 @@ maan/
 *.png
 *.jpg
 *.npy
+*.exr
+*.ppm
+*.tiff
+*.CR2
