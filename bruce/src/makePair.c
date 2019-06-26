@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
   ppm = malloc(sizeof(FPixel)*rows*cols);
 
   for(i=0;i<N;i++) {
-    int which = 0; // rand() % 5;
+    int which = 4; // rand() % 5;
     switch(which) {
     case 0:
       src = makeMaterialMap_solid(rows, cols);
