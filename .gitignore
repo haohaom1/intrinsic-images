@@ -1,5 +1,5 @@
 # don't track these personal folders
-bruce/
+
 __pycache__/
 test/
 maan/
