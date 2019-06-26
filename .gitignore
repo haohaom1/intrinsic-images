@@ -13,6 +13,7 @@ maan/
 # don't upload test data
 *.png
 *.jpg
+*.jpeg
 *.npy
 *.exr
 *.ppm
