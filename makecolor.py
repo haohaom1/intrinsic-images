@@ -1,3 +1,13 @@
+'''
+adds color to a greyscale image
+assumes that the greyscale image is between 0-1 floating point numbers
+
+Saves everything as np arrays
+
+NAMING CONVENTION: ./[(amb, dir, imap)]/[gen_type]%d.npy
+'''
+
+
 import cvtcolor as cvt
 import numpy as np 
 import os
@@ -67,12 +77,13 @@ def main(argv):
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i), image)
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_amb', amb)
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_dir', direct)
-        image = image.astype(np.float32) / 255
-        np.save(f'./imaps/{gen_type}{i}', image)
-        
-        # imageio.imwrite('./test/{}_{}.png'.format(argv[1], i), image)
-        # imageio.imwrite('./test/{}_{}_amb.png'.format(argv[1], i), amb)
-        # imageio.imwrite('./test/{}_{}_dir.png'.format(argv[1], i), direct)
+        image = image.astype(np.float32) / 255.
+        amb = amb.astype(np.float32) / 255.
+        direct = direct.astype(np.float32) / 255.
+
+        np.save(f'./imaps/imaps/{gen_type}{i}', image)
+        np.save(f'./imaps/ambient/{gen_type}{i}', image)
+        np.save(f'./imaps/direct/{gen_type}{i}', image)
 
 if __name__ == "__main__":
     main(sys.argv)
