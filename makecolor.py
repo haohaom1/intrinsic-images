@@ -38,6 +38,12 @@ def main(argv):
         width = 512
         height = 512
 
+    # make sure the saving directories exist
+    paths = ['./imaps', './imaps/imaps', './imaps/ambient', './imaps/direct']
+    for p in paths: 
+        if not os.path.isdir(p):
+            os.mkdir(p)
+
     for i in range(300):
         # image = None
         # generate greyscale first
