@@ -23,3 +23,6 @@ maan/
 # keras stuff
 *.hdf5
 *.h5
+
+# C output files
+*.o

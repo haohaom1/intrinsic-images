@@ -28,7 +28,7 @@ def save_to_npy(img, out_name, bpath):
 
 def main(argv):
     max_val = 255
-
+ 
     basedir = os.path.join(basepath, "test_mmap_ppm")
     for d in os.listdir(basedir):
         fname = os.path.join(basedir, d)
