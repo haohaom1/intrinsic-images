@@ -85,5 +85,7 @@ def main(argv):
         np.save(f'./imaps/ambient/{gen_type}{i}', image)
         np.save(f'./imaps/direct/{gen_type}{i}', image)
 
+        print('saved', gen_type, i)
+
 if __name__ == "__main__":
     main(sys.argv)
