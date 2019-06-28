@@ -19,3 +19,7 @@ maan/
 *.ppm
 *.tiff
 *.CR2
+
+# keras stuff
+*.hdf5
+*.h5
