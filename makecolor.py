@@ -26,6 +26,10 @@ sys.path.insert(0, './stripes/src')
 import fractal
 import singlegen
 
+
+NUM_MAPS = 1200
+
+
 def main(argv):
     if len(argv) < 2:
         print('[type of map] [width] [height]')
@@ -44,7 +48,7 @@ def main(argv):
         if not os.path.isdir(p):
             os.mkdir(p)
 
-    for i in range(300):
+    for i in range(NUM_MAPS):
         # image = None
         # generate greyscale first
 
