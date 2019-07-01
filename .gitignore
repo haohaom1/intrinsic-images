@@ -4,7 +4,6 @@ __pycache__/
 test/
 maan/
 
-
 # ignore notebooks
 *.ipynb
 **/.ipynb_checkpoints

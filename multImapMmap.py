@@ -6,8 +6,13 @@ import numpy as np
 import sys
 import os
 import imageio
+import random
+
 
 def main(argv):
+    '''
+    Takes 4 paths, and saves the product as a numpy array (LEGACY)
+    '''
     if len(argv) < 4:
         print('[path to illumination map] [path to material map] [path of product] [path of product as png (opt.)]')
         return
