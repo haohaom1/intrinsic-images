@@ -35,7 +35,7 @@ def main(argv):
     range_imap_files = range(len(imap_files))
     
     # without replacement
-    for file_mmap in os.listdir(path_mmap)[-5:]:
+    for file_mmap in os.listdir(path_mmap):
         if file_mmap.endswith('npy'):
             mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
 
