@@ -87,13 +87,13 @@ def main(argv):
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i), image)
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_amb', amb)
         # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_dir', direct)
-        image = image.astype(np.float32) / 255.
-        amb = amb.astype(np.float32) / 255.
-        direct = direct.astype(np.float32) / 255.
+        # image = image.astype(np.float32) / 255.
+        # amb = amb.astype(np.float32) / 255.
+        # direct = direct.astype(np.float32) / 255.
 
         np.save(f'./imaps/imaps/{gen_type}{i}', image)
-        np.save(f'./imaps/ambient/{gen_type}{i}', image)
-        np.save(f'./imaps/direct/{gen_type}{i}', image)
+        np.save(f'./imaps/ambient/{gen_type}{i}', amb)
+        np.save(f'./imaps/direct/{gen_type}{i}', direct)
 
         print('saved', gen_type, i)
 
