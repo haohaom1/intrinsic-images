@@ -10,6 +10,11 @@ import cv2
 
 
 def hsv2rgb(h, s, v):
+
+    h = np.mod(h, 1.0)
+    s = np.mod(s, 1.0)
+    v = np.mod(v, 1.0)
+
     def f(n):
         k = np.mod(n + h * 6, 6)
         res = v - v*s*np.maximum(np.minimum(np.minimum(k, 4-k), np.ones(h.shape)), np.zeros(k.shape))
