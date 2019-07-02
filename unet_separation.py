@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+# Allen Ma 
+# unet initial experiments with just generating half the imap
 
 import keras
 import tensorflow as tf
