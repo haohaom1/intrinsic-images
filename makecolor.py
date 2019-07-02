@@ -91,7 +91,7 @@ def main(argv):
         # amb = amb.astype(np.float32) / 255.
         # direct = direct.astype(np.float32) / 255.
 
-        np.save(f'./imaps/imaps/{gen_type}{i}', image)
+        np.save(f'./imaps/final/{gen_type}{i}', image)
         np.save(f'./imaps/ambient/{gen_type}{i}', amb)
         np.save(f'./imaps/direct/{gen_type}{i}', direct)
 
