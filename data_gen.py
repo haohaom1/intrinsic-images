@@ -5,7 +5,15 @@ import imageio
 import random
 import argparse
 
-def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=5, resolution=128):
+# NOTE: hardcoding is as follows
+# imap_npy has 4800 images
+# mmap_npy has 1200 images
+# so by design, we multiply mmap * 4
+# batch size 64 bc 4800 / 64 = 75 which is cleanly divisible
+# file paths are hardcoded for the linux dwarves
+# - Allen 2 July
+
+def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=128, batch_size = 64):
 
     '''
     Takes two paths, and creates a generator
@@ -27,33 +35,51 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=5, resolution=
         # without replacement
         for file_mmap, file_imap in zip(all_mmap_files, imap_files):
 
-            # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: ./data/imap_npy/[(amb, dir, final)]/[gen_type]%d.npy
-            amb_imap = np.load(os.path.join(path_imap.replace('final', 'ambient'), file_imap), allow_pickle=True)
-            dir_imap = np.load(os.path.join(path_imap.replace('final', 'direct'), file_imap), allow_pickle=True)
+            batch_imap = []
+            batch_res = []
+            # this will fetch a batch
+            for _ in range(batch_size):
 
-            mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
-            imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)
-                
-                
-            res = np.multiply(mmap, imap)  # element wise multiplication
+                # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: ./data/imap_npy/[(amb, dir, final)]/[gen_type]%d.npy
+                amb_imap = np.load(os.path.join(path_imap.replace('final', 'ambient'), file_imap), allow_pickle=True)
+                dir_imap = np.load(os.path.join(path_imap.replace('final', 'direct'), file_imap), allow_pickle=True)
 
-            # cutoff between 0 and 1
-            res = np.clip(res, 0., 1.)
+                mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
+                imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)
+                    
+                res = np.multiply(mmap, imap)  # element wise multiplication
 
-            # if using logspace, convert to 16 bit ints, add offset, then take log
-            if log:
-                offset = 5
-                res = res * 65535 + offset
+                # cutoff between 0 and 1
+                res = np.clip(res, 0., 1.)
 
-                res = np.log(res)
+                # if using logspace, convert to 16 bit ints, add offset, then take log
+                if log:
+                    offset = 5
+                    res = res * 65535 + offset
 
-            # if using linear space, scale all values between [-0.5, 0.5]
-            else:
-                res -= 0.5
+                    res = np.log(res)
 
-            # interpolation to the right dimension
+                # if using linear space, scale all values between [-0.5, 0.5]
+                else:
+                    res -= 0.5
 
-            yield amb_imap, dir_imap, imap, mmap, res
+                # take the center crop
+                # Allen - we should data augment our 512 x 512 images
+                assert(res.shape == imap.shape)
+                center_x = res.shape[1] // 2
+                center_y = res.shape[0] // 2
+                imap_cropped = imap[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
+                res_cropped = res[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
+                assert(res_cropped.shape[:2] == [resolution, resolution]) 
+
+                batch_res.append(res_cropped)
+                batch_imap.append(imap_cropped)
+
+            # yield amb_imap, dir_imap, imap, mmap, res
+
+            # only compare with imap
+            # changed by Allen - initial testing 
+            yield batch_res, batch_imap
 
 def augmentData():
     '''
