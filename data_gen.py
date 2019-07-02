@@ -27,12 +27,13 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=5, resolution=
         # without replacement
         for file_mmap, file_imap in zip(all_mmap_files, imap_files):
 
-            # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: ./data/imaps_npy/[(amb, dir, final)]/[gen_type]%d.npy
+            # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: ./data/imap_npy/[(amb, dir, final)]/[gen_type]%d.npy
             amb_imap = np.load(os.path.join(path_imap.replace('final', 'ambient'), file_imap), allow_pickle=True)
             dir_imap = np.load(os.path.join(path_imap.replace('final', 'direct'), file_imap), allow_pickle=True)
 
             mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
             imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)
+                
                 
             res = np.multiply(mmap, imap)  # element wise multiplication
 
