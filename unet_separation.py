@@ -118,8 +118,9 @@ def main():
     unet = UNet()
 
     # hardcoded path names
+    # in data_gen you apparently have to specify final
     path_imap = "/media/yma21/gilmore/intrinsic-images/data/imap_npy/final"
-    path_mmap = "/media/yma21/gilmore/intrinsic-images/data/matmap_npy/final"
+    path_mmap = "/media/yma21/gilmore/intrinsic-images/data/matmap_npy/"
 
     BATCH_SIZE = 64
     LEN_DATA = 4800
