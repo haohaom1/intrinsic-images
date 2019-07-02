@@ -78,7 +78,8 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
 
             # only compare with imap
             # changed by Allen - initial testing 
-            yield batch_res, batch_imap
+            print(np.array(batch_res).shape)
+            yield np.array(batch_res), np.array(batch_imap)
 
 def augmentData():
     '''
