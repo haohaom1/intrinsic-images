@@ -4,7 +4,7 @@ assumes that the greyscale image is between 0-1 floating point numbers
 
 Saves everything as np arrays
 
-NAMING CONVENTION: ./data/imaps_npy/[(amb, dir, final)]/[gen_type]%d.npy
+NAMING CONVENTION: ./data/imap_npy/[(amb, dir, final)]/[gen_type]%d.npy
 '''
 
 
@@ -43,7 +43,8 @@ def main(argv):
         height = 512
 
     # make sure the saving directories exist
-    paths = ['./imaps', './imaps/imaps', './imaps/ambient', './imaps/direct']
+    paths = ['./data', './data/imap_npy', './data/imap_npy/final', 
+            './data/imap_npy/ambient', './data/imap_npy/direct']
     for p in paths: 
         if not os.path.isdir(p):
             os.mkdir(p)
@@ -91,9 +92,9 @@ def main(argv):
         # amb = amb.astype(np.float32) / 255.
         # direct = direct.astype(np.float32) / 255.
 
-        np.save(f'./data/imaps_npy/final/{gen_type}{i}', image)
-        np.save(f'./data/imaps_npy/ambient/{gen_type}{i}', amb)
-        np.save(f'./data/imaps_npy/direct/{gen_type}{i}', direct)
+        np.save(f'./data/imap_npy/final/{gen_type}{i}', image)
+        np.save(f'./data/imap_npy/ambient/{gen_type}{i}', amb)
+        np.save(f'./data/imap_npy/direct/{gen_type}{i}', direct)
 
         print('saved', gen_type, i)
 
