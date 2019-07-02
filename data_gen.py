@@ -18,6 +18,9 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
     Takes two paths, and creates a generator
     '''
 
+    print(path_imap)
+    print(path_mmap)
+
     # assert that the path exists
     assert os.path.isdir(path_imap) and os.path.isdir(path_mmap)
 
