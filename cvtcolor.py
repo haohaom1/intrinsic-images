@@ -8,6 +8,23 @@ from PIL import Image
 import scipy.misc
 import cv2
 
+
+def hsv2rgb(h, s, v):
+
+    h = np.mod(h, 1.0)
+    s = np.mod(s, 1.0)
+    v = np.mod(v, 1.0)
+
+    def f(n):
+        k = np.mod(n + h * 6, 6)
+        res = v - v*s*np.maximum(np.minimum(np.minimum(k, 4-k), np.ones(h.shape)), np.zeros(k.shape))
+        return res
+
+    # src: wikipedia
+    r, g, b = f(5), f(3), f(1)
+    
+    return r, g, b
+
 def addIlluminationColor(image,
     ambient_std_saturation = 0.15,
     ambient_std_intensity = 0.10,
@@ -54,18 +71,19 @@ def addIlluminationColor(image,
     # sat_dir *= np.ones(shape)
     # val_dir *= np.ones(shape)
 
-    img_amb = (np.stack([hue_amb, sat_amb, val_amb], axis=2) * [180, 255, 255]).astype(np.uint8)
-    img_amb = cv2.cvtColor(img_amb, cv2.COLOR_HSV2RGB).astype(np.uint16)
+    # img_amb = (np.stack([hue_amb, sat_amb, val_amb], axis=2) * [180, 255, 255]).astype(np.uint8)
+    # img_amb = cv2.cvtColor(img_amb, cv2.COLOR_HSV2RGB).astype(np.uint16)
 
-    img_dir = (np.stack([hue_dir, sat_dir, val_dir], axis=2) * [180, 255, 255]).astype(np.uint8)
-    img_dir = cv2.cvtColor(img_dir, cv2.COLOR_HSV2RGB).astype(np.uint16)
-    # ra, ga, ba = hsi2rgb(hue_amb, sat_amb, val_amb)
-    # rd, gd, bd = hsi2rgb(hue_dir, sat_dir, val_dir)
+    # img_dir = (np.stack([hue_dir, sat_dir, val_dir], axis=2) * [180, 255, 255]).astype(np.uint8)
+    # img_dir = cv2.cvtColor(img_dir, cv2.COLOR_HSV2RGB).astype(np.uint16)
 
-    # img_amb = np.stack([ra, ga, ba], axis=2)
-    # img_dir = np.stack([rd, gd, bd], axis=2)
+    ra, ga, ba = hsv2rgb(hue_amb, sat_amb, val_amb)
+    img_amb = np.stack([ra, ga, ba], axis=2)
 
-    # adds 16 bit imgs
+    rd, gd, bd = hsv2rgb(hue_dir, sat_dir, val_dir)
+    img_dir = np.stack([rd, gd, bd], axis=2)
+
+    # adds 2 np.float arrays; image: [0, 2.]
     image = img_amb + img_dir
     
     # image = image / [255, 255, 255]
@@ -81,55 +99,6 @@ def normalizeImage(image):
     image = image.astype(np.uint8)
     return image
 
-# assumes hue is constant
-def hsi2rgb(h, s, i):
-    
-    '''
-    h: [0, 2pi]
-    s: [0, 1]
-    i: [0, 1]
-    '''
-    
-    if isinstance(h, (int, float)):
-        hval = h
-    else:
-        hval = h[0,0]
-    
-    
-    x = i * (1 - s)
-    
-    if hval < (2 * np.pi / 3):
-        y = i * (1 + ((s * np.cos(h)) / (np.cos(np.pi / 3 - h)))) / 3
-        z = i - (x + y)
-        
-        b = x
-        r = y
-        g = z
-        
-        
-    elif hval < (4 * np.pi / 3):
-        
-        h = h - (2 * np.pi) / 3
-        
-        y = i * (1 + (s * np.cos(h)) / (np.cos(np.pi / 3 - h))) / 3
-        z = i - (x + y)
-        
-        r = x
-        g = y
-        b = z
-        
-    elif hval < (2 * np.pi):
-        
-        h = h - (4 * np.pi) / 3
-        
-        y = i * (1 + (s * np.cos(h)) / (np.cos(np.pi / 3 - h))) / 3
-        z = i - (x + y)
-        
-        g = x
-        b = y
-        r = z
-        
-    return r, g, b
 
 def main(argv):
     if len(argv) < 3:
