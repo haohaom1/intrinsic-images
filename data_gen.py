@@ -17,10 +17,6 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
     '''
     Takes two paths, and creates a generator
     '''
-
-    print(path_imap)
-    print(path_mmap)
-
     # assert that the path exists
     assert os.path.isdir(path_imap) and os.path.isdir(path_mmap)
 
@@ -72,6 +68,7 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
                 center_y = res.shape[0] // 2
                 imap_cropped = imap[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
                 res_cropped = res[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
+                print(res_cropped.shape[:2])
                 assert(res_cropped.shape[:2] == [resolution, resolution]) 
 
                 batch_res.append(res_cropped)
