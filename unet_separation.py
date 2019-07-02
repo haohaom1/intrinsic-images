@@ -97,12 +97,12 @@ class UNet():
         # compile the model with a loss function
         self.model.compile(optimizer='adam', loss=self.imap_only_loss, metrics=['mse'])
 
-    def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=None):
+    def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
         '''
             call this to train the network
             gen - a generator function to pass into model.fit_generator()
         '''
-        self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=[callbacks_list])
+        self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=callbacks_list)
 
 
 def main():
