@@ -69,7 +69,7 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
                 imap_cropped = imap[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
                 res_cropped = res[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
                 print(res_cropped.shape[:2])
-                assert(res_cropped.shape[:2] == [resolution, resolution]) 
+                assert(res_cropped.shape[0] == res_cropped.shape[1] and res_cropped.shape[0] == resolution) 
 
                 batch_res.append(res_cropped)
                 batch_imap.append(imap_cropped)
