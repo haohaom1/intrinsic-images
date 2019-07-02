@@ -119,7 +119,7 @@ def main():
 
     # hardcoded path names
     path_imap = "/media/yma21/gilmore/intrinsic-images/data/imap_npy/final"
-    path_matmap = "/media/yma21/gilmore/intrinsic-images/data/matmap_npy/final"
+    path_mmap = "/media/yma21/gilmore/intrinsic-images/data/matmap_npy/final"
 
     BATCH_SIZE = 64
     LEN_DATA = 4800
