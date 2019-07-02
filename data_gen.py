@@ -5,7 +5,7 @@ import imageio
 import random
 import argparse
 
-def data_gen(path_imap, path_mmap, log=False, num_imaps_per_mmap=5, resolution=256):
+def data_gen(path_imap, path_mmap, log=False, num_imaps_per_mmap=5, resolution=128):
 
     '''
     Takes two paths, and creates a generator
