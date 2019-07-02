@@ -102,7 +102,7 @@ class UNet():
             call this to train the network
             gen - a generator function to pass into model.fit_generator()
         '''
-        model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=[callbacks_list])
+        self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=[callbacks_list])
 
 
 def main():
