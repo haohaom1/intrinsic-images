@@ -13,6 +13,10 @@ def crop(img, output_size=512):
     img is a 3 channel rgb np array 
     '''
 
+    # if the image is in 8 bit rgb, convert to floating point
+    if img.dtype == 'uint8':
+        img = img / 255.
+
     # center crop
     d = int(output_size / 2)
     h = np.random.randint(d) + int(img.shape[0] / 2)
@@ -30,18 +34,19 @@ def crop(img, output_size=512):
     # scaled and rotated crop
     # rotations by 90 degrees only
     angle = random.randint(1,3) * 90
-    flip = random.random() > 0.5
-
     img_rot = ndimage.rotate(img, angle)
-    if flip:
-        direction = random.randint(0, 1)
-        img_rot = cv2.flip(img_rot, direction)
 
     max_scale = int(min(img_rot.shape) / output_size) # maximum shrinkage to ensure a output_size is still possible
     scale = np.random.uniform() * (max_scale - 1) + 1
     img_scaled = cv2.resize(img_rot, (int(img_rot.shape[1] / scale), int(img_rot.shape[0] / scale)), interpolation=cv2.INTER_AREA)
 
     crop3 = random_crop(img_scaled, output_size)
+    
+    
+    flip = random.random() > 0.5
+    if flip:
+        direction = random.randint(0, 1)
+        crop3 = cv2.flip(crop3, direction)
 
     # clip the crops to [0, 1]
     crop1 = np.clip(crop1, 0, 1)
