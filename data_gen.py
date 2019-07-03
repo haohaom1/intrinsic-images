@@ -3,6 +3,7 @@ import sys
 import os
 import random
 import argparse
+import cv2
 
 # NOTE: hardcoding is as follows
 # imap_npy has 4800 images
@@ -41,13 +42,14 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
             # this will fetch a batch
             for _ in range(batch_size):
 
-                # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: ./data/imap_npy/[(amb, dir, final)]/[gen_type]%d.npy
-                amb_imap = np.load(os.path.join(path_imap.replace('final', 'ambient'), file_imap), allow_pickle=True)
-                dir_imap = np.load(os.path.join(path_imap.replace('final', 'direct'), file_imap), allow_pickle=True)
+                # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: NAMING CONVENTION: ./data/[(ambient_imap, direct_imap, imap)]/[train, test]/[gen_type]%d.npy
+                amb_imap = np.load(os.path.join(path_imap.replace('imap', 'ambient_imap'), file_imap), allow_pickle=True)
+                dir_imap = np.load(os.path.join(path_imap.replace('imap', 'direct_imap'), file_imap), allow_pickle=True)
 
                 mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
                 imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)
                     
+                assert(mmap.shape == imap.shape)
                 res = np.multiply(mmap, imap)  # element wise multiplication
 
                 # cutoff between 0 and 1
@@ -67,11 +69,15 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
                 # take the center crop
                 # Allen - we should data augment our 512 x 512 images
                 assert(res.shape == imap.shape)
-                center_x = res.shape[1] // 2
-                center_y = res.shape[0] // 2
-                imap_cropped = imap[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
-                res_cropped = res[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
-                assert(res_cropped.shape[0] == res_cropped.shape[1] and res_cropped.shape[0] == resolution) 
+                # center_x = res.shape[1] // 2
+                # center_y = res.shape[0] // 2
+                # imap_cropped = imap[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
+                # res_cropped = res[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
+                # assert(res_cropped.shape[0] == res_cropped.shape[1] and res_cropped.shape[0] == resolution) 
+
+                # Mike - use rescale instead of cropping
+                imap_cropped = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                res_cropped = cv2.resize(res, (resolution, resolution), interpolation=cv2.INTER_AREA)
 
                 batch_res.append(res_cropped)
                 batch_imap.append(imap_cropped)

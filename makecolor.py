@@ -4,7 +4,11 @@ assumes that the greyscale image is between 0-1 floating point numbers
 
 Saves everything as np arrays
 
-NAMING CONVENTION: ./data/imap_npy/[(amb, dir, final)]/[gen_type]%d.npy
+NOTE:
+NAMING CONVENTION: ./data/[(ambient_imap, direct_imap, imap)]/[train, test]/[gen_type]%d.npy
+Saves everything to train by default
+
+Make sure naming convention is in sync with data_gen.py
 '''
 
 
@@ -42,12 +46,12 @@ def main(argv):
         width = 512
         height = 512
 
-    # make sure the saving directories exist
-    paths = ['./data', './data/imap_npy', './data/imap_npy/final', 
-            './data/imap_npy/ambient', './data/imap_npy/direct']
-    for p in paths: 
-        if not os.path.isdir(p):
-            os.mkdir(p)
+    # # make sure the saving directories exist
+    # paths = ['./data', './data/imap_npy', './data/imap_npy/final', 
+    #         './data/imap_npy/ambient', './data/imap_npy/direct']
+    # for p in paths: 
+    #     if not os.path.isdir(p):
+    #         os.mkdir(p)
 
     for i in range(NUM_MAPS):
         # image = None
@@ -92,9 +96,9 @@ def main(argv):
         # amb = amb.astype(np.float32) / 255.
         # direct = direct.astype(np.float32) / 255.
 
-        np.save(f'./data/imap_npy/final/{gen_type}{i}', image)
-        np.save(f'./data/imap_npy/ambient/{gen_type}{i}', amb)
-        np.save(f'./data/imap_npy/direct/{gen_type}{i}', direct)
+        np.save(f'./data/imap/train/{gen_type}{i}', image)
+        np.save(f'./data/ambient_imap/train/{gen_type}{i}', amb)
+        np.save(f'./data/direct_imap/train/{gen_type}{i}', direct)
 
         print('saved', gen_type, i)
 
