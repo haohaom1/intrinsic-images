@@ -43,8 +43,8 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
             for _ in range(batch_size):
 
                 # ASSUMES THAT THE PATH STRUCTURE IS NAMING CONVENTION: NAMING CONVENTION: ./data/[(ambient_imap, direct_imap, imap)]/[train, test]/[gen_type]%d.npy
-                amb_imap = np.load(os.path.join(path_imap.replace('imap', 'ambient_imap'), file_imap), allow_pickle=True)
-                dir_imap = np.load(os.path.join(path_imap.replace('imap', 'direct_imap'), file_imap), allow_pickle=True)
+                amb_imap = np.load(os.path.join(path_imap.replace('imap_npy', 'imap_npy_ambient'), file_imap), allow_pickle=True)
+                dir_imap = np.load(os.path.join(path_imap.replace('imap_npy', 'imap_npy_direct'), file_imap), allow_pickle=True)
 
                 mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
                 imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)

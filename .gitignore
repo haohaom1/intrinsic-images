@@ -3,6 +3,7 @@
 __pycache__/
 test/
 maan/
+.DS_Store
 
 # ignore notebooks
 *.ipynb

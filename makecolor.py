@@ -5,7 +5,7 @@ assumes that the greyscale image is between 0-1 floating point numbers
 Saves everything as np arrays
 
 NOTE:
-NAMING CONVENTION: ./data/[(ambient_imap, direct_imap, imap)]/[train, test]/[gen_type]%d.npy
+NAMING CONVENTION: ./data/imap_npy[amb/direct]]/[train, test]/[gen_type]%d.npy
 Saves everything to train by default
 
 Make sure naming convention is in sync with data_gen.py
@@ -31,20 +31,25 @@ import fractal
 import singlegen
 
 
-NUM_MAPS = 1200
-
 
 def main(argv):
     if len(argv) < 2:
-        print('[type of map] [width] [height]')
+        print('[type of map] [number] [train/test] [width] [height]')
         return 
 
-    if len(argv) > 2:
-        width = int(argv[2])
-        height = int(argv[3])
-    else:
+    if len(argv) > 5:
+        NUM_MAPS = int(argv[2])
+        dir_name = argv[3]
+        width = int(argv[4])
+        height = int(argv[5])
+    else: 
+        # default values
+        NUM_MAPS = 1200
+        dir_name = 'train'
         width = 512
         height = 512
+
+    print(f'{dir_name}: generating {NUM_MAPS} {argv[1]} maps {height} by {width}')
 
     # # make sure the saving directories exist
     # paths = ['./data', './data/imap_npy', './data/imap_npy/final', 
@@ -96,9 +101,9 @@ def main(argv):
         # amb = amb.astype(np.float32) / 255.
         # direct = direct.astype(np.float32) / 255.
 
-        np.save(f'./data/imap/train/{gen_type}{i}', image)
-        np.save(f'./data/ambient_imap/train/{gen_type}{i}', amb)
-        np.save(f'./data/direct_imap/train/{gen_type}{i}', direct)
+        np.save(f'./data/imap/imap_npy/{dir_name}/{gen_type}{i}', image)
+        np.save(f'./data/imap/imap_npy_ambient/{dir_name}/{gen_type}{i}', amb)
+        np.save(f'./data/imap/imap_npy_direct/{dir_name}/{gen_type}{i}', direct)
 
         print('saved', gen_type, i)
 
