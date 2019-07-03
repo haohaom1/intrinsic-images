@@ -12,6 +12,9 @@ import argparse
 # file paths are hardcoded for the linux dwarves
 # - Allen 2 July
 
+# NOTE: zip takes care of the nondivisible issue, anything that is extra 
+# from either list is truncated off 
+
 def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=128, batch_size = 64):
 
     '''
@@ -77,7 +80,7 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
 
             # only compare with imap
             # changed by Allen - initial testing 
-            yield np.array(batch_res), np.array(batch_imap)
+            yield np.array(batch_res), np.array(batch_imap)   # Mike - is this the right dimension that you want? 
 
 def augmentData():
     '''
