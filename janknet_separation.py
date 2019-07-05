@@ -91,7 +91,7 @@ def main():
     # file paths are hardcoded for the linux dwarves
     # - Allen 2 July
 
-    unet = JankNet()
+    janknet = JankNet()
 
     # hardcoded path names
     # in data_gen you apparently have to specify final
@@ -108,7 +108,7 @@ def main():
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=2, save_best_only=False)
     callbacks_list = [checkpoint]
     # Fit the model
-    unet.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap), callbacks_list)
+    janknet.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap), callbacks_list)
 
 
 if __name__ == "__main__":
