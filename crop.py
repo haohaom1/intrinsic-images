@@ -5,9 +5,14 @@ import cv2
 import argparse
 import math
 import argparse
+import os
+
+# NOTE 
+# should we add option to generate more than 4 crops 
 
 '''
-Used to crop the 16 bit .tiff files in various, random ways
+Used to crop the .npy 16 bit tiff files in various, random ways
+Can crop both imaps and mmaps
 '''
 
 def crop(img, output_size=512):
@@ -150,3 +155,62 @@ def crop_around_center(image, width, height):
 
     return image[y1:y2, x1:x2]
 
+
+def getAmbientAndDirect(img):
+    '''
+    pass in a illumination map, returns the ambient and direct
+
+    formula: ambient = map of lowest intensity pixel
+             direct = image - lowest intensity pixel
+    '''
+
+    return None, None
+    
+
+def main(src_dir, dest_dir, imap=False, output_size=512):
+    assert(os.path.isdir(src_dir) and os.path.isdir(dest_dir))
+
+    for fname in os.listdir(src_dir):
+        if fname.endswith('.npy'):
+
+            img = np.load(os.path.join(src_dir, fname))
+            crops = crop(img, output_size=output_size)
+
+            # if its material map, simply save in the dest folder
+
+
+            base = fname.split('.')[0]
+            if not imap:
+                for i, c in enumerate(crops):
+                    new_fname = f'{base}_crop{i}.npy'
+                    np.save(os.path.join(dest_dir, new_fname), c)
+
+            # if its a illumination map, must save the ambient and direct as well
+            else:
+
+                # assert naming convention is correct
+                assert('imap_npy' in dest_dir and 'imap_npy_ambient' not in dest_dir \
+                        and 'imap_npy_direct' not in dest_dir )
+
+                for i, c in enumerate(crops):
+                    new_fname = f'{base}_crop{i}.npy'
+
+                    amb, direct = getAmbientAndDirect(c)
+
+                    # saves all 3 maps to the right directories
+                    np.save(os.path.join(dest_dir, new_fname), c)
+                    np.save(os.path.join(dest_dir.replace('imap_npy', 'imap_npy_ambient'), new_fname), amb)
+                    np.save(os.path.join(dest_dir.replace('imap_npy', 'imap_npy_direct'), new_fname), direct)                    
+                    
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('src_dir', help='directory of all the .tiff files')
+    parser.add_argument('dest_dir', help='directory to store the cropped .npy files. If imap, \
+                        pass in directory of where the sum would be stored')
+    parser.add_argument('-i', '--imap', help='store imap', action='store_true')
+    parser.add_argument('-s', '--output_size', help='desired output size of the crops', default=512, type=int)
+
+    args, extras = parser.parse_known_args()
+
+    main(**args)
