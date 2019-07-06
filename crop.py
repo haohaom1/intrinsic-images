@@ -162,9 +162,14 @@ def getAmbientAndDirect(img):
 
     formula: ambient = map of lowest intensity pixel
              direct = image - lowest intensity pixel
+
+    NOTE: This is not always accurate
     '''
 
-    return None, None
+    amb = np.min(np.max(img, axis=2)) * np.ones_like(img)
+    dire = img - amb
+
+    return amb, dire
     
 
 def main(src_dir, dest_dir, imap=False, output_size=512):
