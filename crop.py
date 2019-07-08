@@ -218,4 +218,4 @@ if __name__ == "__main__":
 
     args, extras = parser.parse_known_args()
 
-    main(**args)
+    main(**vars(args))
