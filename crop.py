@@ -213,7 +213,7 @@ if __name__ == "__main__":
     parser.add_argument('src_dir', help='directory of all the .tiff files')
     parser.add_argument('dest_dir', help='directory to store the cropped .npy files. If imap, \
                         pass in directory of where the ambient+direct would be stored')
-    parser.add_argument('-i', '--imap', help='store imap', action='store_true')
+    parser.add_argument('-i', '--imap', help='calculate ambient and direct store imap', action='store_true')
     parser.add_argument('-s', '--output_size', help='desired output size of the crops', default=512, type=int)
 
     args = parser.parse_args()

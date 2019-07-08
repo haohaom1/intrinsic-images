@@ -8,6 +8,7 @@ matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
 import os.path
 import cv2
+import imageio
 
 basepath = "/Users/home1/Allen/summer19/intrinsic-images/intrinsic-images/data"
 
@@ -25,7 +26,11 @@ def tiff_to_numpy(fname):
         print("Image {} is not tiff format".format(fname))
         raise(AssertionError)
     else:
-        return cv2.imread( fname, cv2.IMREAD_ANYDEPTH )
+        # 16 bit, linear, preserve rgb channel
+        img = cv2.imread( fname, -1 )
+        # convert bgr to rgb
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        return img
 
 def numpy_to_exr(img, out_name):
     ''' converts numpy arr to exr file 
@@ -54,7 +59,7 @@ def main(fdir, outdir):
     print(f"total: {count} converted")
 
 if __name__ == "__main__":
-    main("matmap_tiff", "matmap_raw_npy")
-    main("imap_tiff", "imap_raw_npy")
+    main("./data/mmap/mmap_real_tiff", "./data/mmap/mmap_real_npy")
+    main("./data/imap/imap_real_tiff", "./data/imap/imap_real_npy")
 
 
