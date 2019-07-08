@@ -10,7 +10,7 @@ import os.path
 import cv2
 import imageio
 
-basepath = "/Volumes/gilmore/intrinsic-images/data"
+basepath = "/Volumes/gilmore/intrinsic-images/data/"
 
 def ppm_to_numpy(fname):
     ''' reads in a ppm image and returns a numpy array'''
