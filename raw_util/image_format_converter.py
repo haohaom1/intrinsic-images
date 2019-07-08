@@ -10,7 +10,7 @@ import os.path
 import cv2
 import imageio
 
-basepath = "/Users/home1/Allen/summer19/intrinsic-images/intrinsic-images/data"
+basepath = "/Volumes/gilmore/intrinsic-images/data"
 
 def ppm_to_numpy(fname):
     ''' reads in a ppm image and returns a numpy array'''
@@ -59,7 +59,7 @@ def main(fdir, outdir):
     print(f"total: {count} converted")
 
 if __name__ == "__main__":
-    main("./data/mmap/mmap_real_tiff", "./data/mmap/mmap_real_npy")
-    main("./data/imap/imap_real_tiff", "./data/imap/imap_real_npy")
+    main("mmap/mmap_real_tiff", "mmap/mmap_real_npy")
+    main("imap/imap_real_tiff", "imap/imap_real_npy")
 
 
