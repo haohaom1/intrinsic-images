@@ -101,6 +101,11 @@ def main(argv):
         # amb = amb.astype(np.float32) / 255.
         # direct = direct.astype(np.float32) / 255.
 
+        # convert to float32
+        image = image.astype(np.float32)
+        amb = amb.astype(np.float32)
+        direct = direct.astype(np.float32)
+
         np.save(f'./data/imap/imap_npy/{dir_name}/{gen_type}{i}', image)
         np.save(f'./data/imap/imap_npy_ambient/{dir_name}/{gen_type}{i}', amb)
         np.save(f'./data/imap/imap_npy_direct/{dir_name}/{gen_type}{i}', direct)
