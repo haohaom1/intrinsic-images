@@ -18,6 +18,7 @@ maan/
 *.exr
 *.ppm
 *.tiff
+*.tif
 *.CR2
 
 # keras stuff

@@ -22,7 +22,7 @@ def ppm_to_numpy(fname):
 
 def tiff_to_numpy(fname):
     ''' reads in a 16 bit tiff image and returns a numpy array of dtype float32'''
-    if not fname.lower().endswith("tiff"):
+    if not (fname.lower().endswith("tiff") or fname.lower().endswith("tif") ) :
         print("Image {} is not tiff format".format(fname))
         raise(AssertionError)
     else:
@@ -39,27 +39,36 @@ def numpy_to_exr(img, out_name):
     '''
     imageio.imwrite(f'{out_name}.exr', img)
 
-def main(fdir, outdir):
+def convert_save_tiff_npy(basepath, outpath):
+
+    # for 16 bit images
     max_val = 2**16 - 1
  
     count = 0
-    basedir = os.path.join(basepath, fdir)
-    for d in os.listdir(basedir):
-        fname = os.path.join(basedir, d)
+    for d in os.listdir(basepath):
+        fname = os.path.join(basepath, d)
         out_name = d[:-5]
-        if fname.lower().endswith("tiff"):
-            img = tiff_to_numpy(fname)
-            img = img.astype(np.float32)
-            img /= max_val
-            assert(np.max(img) <= 1.0 and np.min(img) >= 0.0)
-            output_fname = os.path.join(os.path.join(basepath, outdir), out_name)
-            print(output_fname)
-            np.save(output_fname, img)
-            count += 1
+        if fname.lower().endswith(".tiff"):
+            out_name = d[:-5]
+        elif fname.lower().endswith(".tif"):
+            out_name = d[:-4]
+        else:
+            print(f"{d} is not a tiff file")
+        img = tiff_to_numpy(fname)
+        img = img.astype(np.float32)
+        img /= max_val
+        assert(np.max(img) <= 1.0 and np.min(img) >= 0.0)
+        output_fname = os.path.join(outpath, out_name)
+        np.save(output_fname, img)
+        count += 1
     print(f"total: {count} converted")
 
+def main(argv):
+    basepath = argv[1]
+    outpath = argv[2]
+    convert_save_tiff_npy(basepath, outpath)
+
 if __name__ == "__main__":
-    main("mmap/mmap_real_tiff", "mmap/mmap_real_npy")
-    main("imap/imap_real_tiff", "imap/imap_real_npy")
+    main(sys.argv)
 
 

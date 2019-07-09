@@ -81,14 +81,18 @@ def main():
     # calculate an average around each location
     sum = 0.0
 
-    for j in range(points[i][1] - 3, points[i][1]):
-      for k in range (points[i][0] - 3, points[i][0] + 3):
+    for j in range(points[i][1] - 3, points[i][1] + 4):
+      for k in range (points[i][0] - 3, points[i][0] + 4):
         rgb = src[j, k]
         sum += rgb[0]
-        sum += rgb[1]
-        sum += rgb[2]
+        # sum += rgb[1]
+        # sum += rgb[2]
+        # if i == 0 or i == 1:
+        #   print(rgb[1])
 
-    sum /= 3.0 * 49
+    print(points[i][0])
+    print(points[i][1])
+    sum /= 1.0 * 49
     y.append(sum)
     print("%.2f,%.2f\n", macbeth[i], sum)
 
