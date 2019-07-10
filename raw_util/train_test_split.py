@@ -1,7 +1,7 @@
 # assuming 100% of images are in basepath
 # this script randomly allots 20% of the data into outpath
 # leaving 80% in basepath
-import os
+import os, os.path
 import sys
 import random
 
@@ -13,7 +13,7 @@ def train_test_split(basepath, outpath, ratio=0.8):
         ratio is the dominant ratio eg. 80 in 80/20
     '''
     all_paths = []
-    for d in os.path.listdir(basepath):
+    for d in os.listdir(basepath):
         all_paths.append(os.path.join(basepath, d))
     # randomly shuffle the paths
     random.shuffle(all_paths)
