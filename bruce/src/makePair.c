@@ -70,6 +70,7 @@ int main(int argc, char *argv[]) {
   int rows, cols, N;
   char prefix[32];
   char buffer[64];
+  char type[16];
   int i, j;
 
   if( argc < 4 ) {
@@ -91,39 +92,47 @@ int main(int argc, char *argv[]) {
   if( argc >= 5 )
     strcpy(prefix, argv[4]);
   else
-    strcpy(prefix, "frame");
+    strcpy(prefix, "frame_");
 
   ppm = malloc(sizeof(FPixel)*rows*cols);
 
-  for(i=0;i<N;i++) {
-    int which = 4; // rand() % 5;
-    switch(which) {
-    case 0:
-      src = makeMaterialMap_solid(rows, cols);
-      break;
-    case 1:
-      src = makeMaterialMap_randomPixel( rows, cols );
-      break;
-    case 2:
-      src = makeMaterialMap_twoColorLinearSplit( rows, cols );
-      break;
-    case 3:
-      src = makeMaterialMap_manySeed( rows, cols );
-      break;
-    case 4:
-      src = makeMaterialMap_squares( rows, cols );
-      break;
-    }
+  // modified by Allen to generate all the kinds of images
+  for (int t = 0; t < 5; t++) {
+    for(i=0;i<N;i++) {
+      int which = t; // rand() % 5;
+      switch(which) {
+      case 0:
+        src = makeMaterialMap_solid(rows, cols);
+        strcpy(type, "solid");
+        break;
+      case 1:
+        src = makeMaterialMap_randomPixel( rows, cols );
+        strcpy(type, "random");
+        break;
+      case 2:
+        src = makeMaterialMap_twoColorLinearSplit( rows, cols );
+        strcpy(type, "twoColor");
+        break;
+      case 3:
+        src = makeMaterialMap_manySeed( rows, cols );
+        strcpy(type, "manySeed");
+        break;
+      case 4:
+        src = makeMaterialMap_squares( rows, cols );
+        strcpy(type, "squares");
+        break;
+      }
 
-    // convert to a ppm
-    for(j=0;j<rows*cols;j++) {
-      ppm[j].r = (int)(src[j].r*255);
-      ppm[j].g = (int)(src[j].g*255);
-      ppm[j].b = (int)(src[j].b*255);
-    }
+      // convert to a ppm
+      for(j=0;j<rows*cols;j++) {
+        ppm[j].r = (int)(src[j].r*255);
+        ppm[j].g = (int)(src[j].g*255);
+        ppm[j].b = (int)(src[j].b*255);
+      }
 
-    sprintf(buffer, "%s%04d.ppm", prefix, i);
-    writePPM( ppm, rows, cols, 255, buffer );
+      sprintf(buffer, "%s%s%04d.ppm", prefix, type, i);
+      writePPM( ppm, rows, cols, 255, buffer );
+    }
   }
 
   return(0);

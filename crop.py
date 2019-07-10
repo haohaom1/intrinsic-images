@@ -15,6 +15,61 @@ Used to crop the .npy 16 bit tiff files in various, random ways
 Can crop both imaps and mmaps
 '''
 
+
+def crop_which(img, which, output_size=512):
+
+    # if the image is in 8 bit rgb, convert to floating point
+    if img.dtype == 'uint8':
+        img = img / 255.
+
+    if which == 0:
+        d = int(output_size / 2)
+        h = np.random.randint(d) + int(img.shape[0] / 2)
+        w = np.random.randint(d) + int(img.shape[1] / 2)
+
+        crop = img[h-d:h+d, w-d:w+d]
+    elif which == 1:
+        max_scale = int(min(img.shape[:2]) / output_size) # maximum shrinkage to ensure a output_size is still possible
+        scale = np.random.uniform() * (max_scale - 1) + 1
+        img_scaled = cv2.resize(img, (int(img.shape[1] / scale), int(img.shape[0] / scale)), interpolation=cv2.INTER_AREA)
+
+        crop = random_crop(img_scaled, output_size)
+    elif which == 2:
+        # CROP3: scaled and rotated crop
+        angle = random.random() * 360.
+        img_rotated = ndimage.rotate(img, angle)
+        img_rotated_cropped = crop_around_center(
+            img_rotated,
+            *largest_rotated_rect(
+                img.shape[1],
+                img.shape[0],
+                math.radians(angle)
+            )
+        )
+        max_scale = int(min(img_rotated_cropped.shape[:2]) / output_size) # maximum shrinkage to ensure a output_size is still possible
+        scale = np.random.uniform() * (max_scale - 1) + 1
+        img_scaled = cv2.resize(img_rotated_cropped, (int(img_rotated_cropped.shape[1] / scale), int(img_rotated_cropped.shape[0] / scale)), interpolation=cv2.INTER_AREA)
+
+        crop = random_crop(img_scaled, output_size)
+        
+        flip = random.random() > 0.5
+        if flip:
+            direction = random.randint(0, 1)
+            crop = cv2.flip(crop, direction)
+    elif which == 3:
+        w = min(img.shape[:2]) // 2
+        img_center = img[img.shape[0] // 2 - w:img.shape[0] // 2 + w, img.shape[1] // 2 - w:img.shape[1] // 2 + w]
+        crop = cv2.resize(img_center, (output_size, output_size), interpolation=cv2.INTER_AREA)
+    else:
+        print(f"{which} not a valid code")
+        exit(-1)
+
+
+    # clip the crop
+    crop = np.clip(crop, 0, 1)
+
+    return crop
+
 def crop(img, output_size=512):
 
     '''
@@ -30,14 +85,14 @@ def crop(img, output_size=512):
     h = np.random.randint(d) + int(img.shape[0] / 2)
     w = np.random.randint(d) + int(img.shape[1] / 2)
 
-    crop1 = img[h-d:h+d, w-d:w+d]
+    crop = img[h-d:h+d, w-d:w+d]
 
     # CROP2: scaled crop
     max_scale = int(min(img.shape[:2]) / output_size) # maximum shrinkage to ensure a output_size is still possible
     scale = np.random.uniform() * (max_scale - 1) + 1
     img_scaled = cv2.resize(img, (int(img.shape[1] / scale), int(img.shape[0] / scale)), interpolation=cv2.INTER_AREA)
 
-    crop2 = random_crop(img_scaled, output_size)
+    crop = random_crop(img_scaled, output_size)
 
     # CROP3: scaled and rotated crop
     angle = random.random() * 360.
@@ -55,12 +110,12 @@ def crop(img, output_size=512):
     scale = np.random.uniform() * (max_scale - 1) + 1
     img_scaled = cv2.resize(img_rotated_cropped, (int(img_rotated_cropped.shape[1] / scale), int(img_rotated_cropped.shape[0] / scale)), interpolation=cv2.INTER_AREA)
 
-    crop3 = random_crop(img_scaled, output_size)
+    crop = random_crop(img_scaled, output_size)
     
     flip = random.random() > 0.5
     if flip:
         direction = random.randint(0, 1)
-        crop3 = cv2.flip(crop3, direction)
+        crop = cv2.flip(crop, direction)
 
     # CROP4: takes the largest center crop, and scales it down
     w = min(img.shape[:2]) // 2
@@ -179,10 +234,18 @@ def main(src_dir, dest_dir, imap=False, output_size=512):
         if fname.endswith('.npy'):
 
             img = np.load(os.path.join(src_dir, fname))
-            crops = crop(img, output_size=output_size)
+
+            # rng to determine number of crops
+            crops = []
+            # always do no 3 once
+            crop_center = crop_which(img, 3, output_size=output_size)
+            crops.append(crop_center)
+            for _ in range(9):
+                i = random.randint(0, 3)
+                crop_img = crop_which(img, i, output_size=output_size)
+                crops.append(crop_img)
 
             # if its material map, simply save in the dest folder
-
 
             base = fname.split('.')[0]
             if not imap:
@@ -199,14 +262,16 @@ def main(src_dir, dest_dir, imap=False, output_size=512):
 
                 for i, c in enumerate(crops):
                     new_fname = f'{base}_crop{i}.npy'
+                    new_fname_ambient = f'{base}_ambient_crop{i}.npy'
+                    new_fname_direct = f'{base}_direct_crop{i}.npy'
 
                     amb, direct = getAmbientAndDirect(c)
 
                     # saves all 3 maps to the right directories
                     np.save(os.path.join(dest_dir, new_fname), c)
-                    np.save(os.path.join(dest_dir.replace('imap_npy', 'imap_npy_ambient'), new_fname), amb)
-                    np.save(os.path.join(dest_dir.replace('imap_npy', 'imap_npy_direct'), new_fname), direct)                    
-                    
+                    np.save(os.path.join(dest_dir.replace('imap_npy', 'imap_npy_ambient'), new_fname_ambient), amb)
+                    np.save(os.path.join(dest_dir.replace('imap_npy', 'imap_npy_direct'), new_fname_direct), direct)   
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -220,3 +285,5 @@ if __name__ == "__main__":
     args = vars(args)
 
     main(**args)
+
+    

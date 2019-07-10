@@ -54,6 +54,7 @@ def convert_save_tiff_npy(basepath, outpath):
             out_name = d[:-4]
         else:
             print(f"{d} is not a tiff file")
+            continue
         img = tiff_to_numpy(fname)
         img = img.astype(np.float32)
         img /= max_val
@@ -63,10 +64,29 @@ def convert_save_tiff_npy(basepath, outpath):
         count += 1
     print(f"total: {count} converted")
 
+def convert_save_ppm_npy(basepath, outpath):
+    max_val = 2**8 - 1
+    count = 0
+    for d in os.listdir(basepath):
+        fname = os.path.join(basepath, d)
+        if fname.lower().endswith(".ppm"):
+            out_name = d[:-4]
+        else:
+            print(f"{d} is not a ppm file")
+        img = ppm_to_numpy(fname)
+        img = img.astype(np.float32)
+        img /= max_val
+        assert(np.max(img) <= 1.0 and np.min(img) >= 0.0)
+        output_fname = os.path.join(outpath, out_name)
+        np.save(output_fname, img)
+        count += 1
+    print(f"total: {count} converted")
+
+
 def main(argv):
     basepath = argv[1]
     outpath = argv[2]
-    convert_save_tiff_npy(basepath, outpath)
+    convert_save_ppm_npy(basepath, outpath)
 
 if __name__ == "__main__":
     main(sys.argv)
