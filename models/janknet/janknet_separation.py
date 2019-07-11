@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import keras.backend
 
 import numpy as np
+# %matplotlib inline
 import random
 
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, Dropout
@@ -27,7 +28,6 @@ from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
 import json
-import datetime
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
@@ -96,17 +96,15 @@ def main(argv):
     LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * NUM_MMAPS_PER_IMAP)
     EPOCHS = 50
 
-    curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     # checkpoint
-    filepath= "./weights-janknet-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
+    filepath="./weights-janknet-{epoch:02d}-{loss:.2f}.hdf5"
     # save the minimum loss
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=2, save_best_only=False)
     callbacks_list = [checkpoint]
     # Fit the model
     history_obj = janknet.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_mmaps_per_imap=NUM_MMAPS_PER_IMAP), callbacks_list)
     # save the history object to a pickle file
-    
-    json.dump(history_obj.history, open(history_path + "_" + curtime, "w"))
+    json.dump(history_obj.history, open(history_path, "w"))
 
 
 if __name__ == "__main__":
