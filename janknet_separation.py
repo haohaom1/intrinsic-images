@@ -81,7 +81,7 @@ class JankNet():
         self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=callbacks_list)
         
         
-def main():
+def main(argv):
 
     # NOTE: hardcoding is as follows
     # imap_npy has 4800 images
@@ -91,12 +91,13 @@ def main():
     # file paths are hardcoded for the linux dwarves
     # - Allen 2 July
 
+    # fixed legacy pathing - Mike
+
     janknet = JankNet()
 
-    # hardcoded path names
-    # in data_gen you apparently have to specify final
-    path_imap = "/media/yma21/gilmore/intrinsic-images/data/imap_npy/final"
-    path_mmap = "/media/yma21/gilmore/intrinsic-images/data/matmap_npy/"
+    # Using argv for path names
+    path_imap = argv[1]
+    path_mmap = argv[2]
 
     BATCH_SIZE = 64
     LEN_DATA = 4800
@@ -112,7 +113,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
 
 
 
