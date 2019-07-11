@@ -8,14 +8,7 @@ Allen Ma
 
 import keras
 import tensorflow as tf
-import matplotlib
-import matplotlib.pyplot as plt
-
 import keras.backend
-
-import numpy as np
-# %matplotlib inline
-import random
 
 from keras.layers import Input, Dense, Conv2D, MaxPooling2D, UpSampling2D, Dropout
 from keras.models import Model
@@ -23,11 +16,8 @@ from keras import backend as K
 from keras.models import load_model
 
 from keras.callbacks import TensorBoard
-import os, os.path
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
-
-import json
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
@@ -82,33 +72,7 @@ class JankNet():
         return self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=callbacks_list)
         
         
-def main(argv):
 
-    janknet = JankNet()
-
-    # Using argv for path names
-    path_imap = argv[1]
-    path_mmap = argv[2]
-    history_path = argv[3]
-
-    BATCH_SIZE = 64
-    NUM_MMAPS_PER_IMAP = 5
-    LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * NUM_MMAPS_PER_IMAP)
-    EPOCHS = 50
-
-    # checkpoint
-    filepath="./weights-janknet-{epoch:02d}-{loss:.2f}.hdf5"
-    # save the minimum loss
-    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=2, save_best_only=False)
-    callbacks_list = [checkpoint]
-    # Fit the model
-    history_obj = janknet.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_mmaps_per_imap=NUM_MMAPS_PER_IMAP), callbacks_list)
-    # save the history object to a pickle file
-    json.dump(history_obj.history, open(history_path, "w"))
-
-
-if __name__ == "__main__":
-    main(sys.argv)
 
 
 
