@@ -27,6 +27,8 @@ import os, os.path
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
+import json
+
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
 
@@ -41,7 +43,6 @@ class JankNet():
         x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
-        x = Dropout(0.2,name='drop1')(x)
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
@@ -73,34 +74,26 @@ class JankNet():
     def __str__(self):
         return self.model.summary()
     
-        def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
+    def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
         '''
             call this to train the network
             gen - a generator function to pass into model.fit_generator()
         '''
-        self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=callbacks_list)
+        return self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=2, callbacks=callbacks_list)
         
         
 def main(argv):
-
-    # NOTE: hardcoding is as follows
-    # imap_npy has 4800 images
-    # mmap_npy has 1200 images
-    # so by design, we multiply mmap * 4
-    # batch size 64 bc 4800 / 64 = 75 which is cleanly divisible
-    # file paths are hardcoded for the linux dwarves
-    # - Allen 2 July
-
-    # fixed legacy pathing - Mike
 
     janknet = JankNet()
 
     # Using argv for path names
     path_imap = argv[1]
     path_mmap = argv[2]
+    history_path = argv[3]
 
     BATCH_SIZE = 64
-    LEN_DATA = 4800
+    NUM_MMAPS_PER_IMAP = 5
+    LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * NUM_MMAPS_PER_IMAP)
     EPOCHS = 50
 
     # checkpoint
@@ -109,7 +102,9 @@ def main(argv):
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=2, save_best_only=False)
     callbacks_list = [checkpoint]
     # Fit the model
-    janknet.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap), callbacks_list)
+    history_obj = janknet.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_mmaps_per_imap=NUM_MMAPS_PER_IMAP), callbacks_list)
+    # save the history object to a pickle file
+    json.dump(history_obj.history, open(history_path, "w"))
 
 
 if __name__ == "__main__":

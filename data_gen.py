@@ -53,6 +53,8 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
                 res = np.multiply(mmap, imap)  # element wise multiplication
 
                 # cutoff between 0 and 1
+                # because image values can only be between 0 and 1
+                # but real-world data can be larger
                 res = np.clip(res, 0., 1.)
 
                 # if using logspace, convert to 16 bit ints, add offset, then take log
@@ -66,16 +68,9 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
                 else:
                     res -= 0.5
 
-                # take the center crop
-                # Allen - we should data augment our 512 x 512 images
                 assert(res.shape == imap.shape)
-                # center_x = res.shape[1] // 2
-                # center_y = res.shape[0] // 2
-                # imap_cropped = imap[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
-                # res_cropped = res[center_x - resolution // 2:center_x + resolution // 2, center_y - resolution // 2: center_y + resolution //2]
-                # assert(res_cropped.shape[0] == res_cropped.shape[1] and res_cropped.shape[0] == resolution) 
 
-                # Mike - use rescale instead of cropping
+                # rescale
                 imap_cropped = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
                 res_cropped = cv2.resize(res, (resolution, resolution), interpolation=cv2.INTER_AREA)
 
@@ -85,26 +80,4 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
             # yield amb_imap, dir_imap, imap, mmap, res
 
             # only compare with imap
-            # changed by Allen - initial testing 
-            yield np.array(batch_res), np.array(batch_imap)   # Mike - is this the right dimension that you want? 
-
-def augmentData():
-    '''
-    Augments the data in a variety of ways
-    '''
-    pass
-
-
-# def main(args):
-#     gen = generator(**args)
-
-# if __name__ == "__main__":
-
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument('path_imap', help='directory of all the illumination map numpy arrays')
-#     parser.add_argument('path_mmap', help='directory of all the material map numpy arrays')
-#     parser.add_argument('-l', '--log', help='use logarithm space', action='store_true')
-#     parser.add_argument('-n', '--num_imaps_per_mmap', help='number of illumination maps per material map', default=5, type=int)
-#     args, extras = parser.parse_known_args()
-
-#     main(args)
+            yield np.array(batch_res), np.array(batch_imap)  
