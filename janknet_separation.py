@@ -8,9 +8,6 @@ Allen Ma
 
 import keras
 import tensorflow as tf
-import matplotlib
-import matplotlib.pyplot as plt
-
 import keras.backend
 
 import numpy as np
@@ -23,11 +20,16 @@ from keras.models import load_model
 
 from keras.callbacks import TensorBoard
 import os, os.path
+import sys
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
 import json
 import datetime
+
+# .py go back -> models -> intrinsic-images
+sys.path.insert(0, "../../")
+import data_gen
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
@@ -94,7 +96,7 @@ def main(argv):
     BATCH_SIZE = 64
     NUM_MMAPS_PER_IMAP = 5
     LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * NUM_MMAPS_PER_IMAP)
-    EPOCHS = 50
+    EPOCHS = 1
 
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     # checkpoint
