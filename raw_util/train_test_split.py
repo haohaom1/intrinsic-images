@@ -18,7 +18,7 @@ def rename_paths(basepath, orig_string, replace_string=""):
         print(f"moving {orig_name} --> {new_name}")
 
 
-def train_test_split(basepath, outpath, ratio=0.8):
+def train_test_split(basepath, outpath, ratio=0.8, imap=False):
     '''
         ratio is the dominant ratio eg. 80 in 80/20
     '''
@@ -31,12 +31,31 @@ def train_test_split(basepath, outpath, ratio=0.8):
     train_paths = all_paths[:ratio_len]
     test_paths = all_paths[ratio_len:]
 
-    # move the test paths
-    for p in test_paths:
-        component_name = os.path.split(p)[1]
-        new_path_name = os.path.join(outpath, component_name)
-        print(f"moving {p} --> {new_path_name}")
-        os.rename(p, new_path_name)
+    if imap:
+        # we assume that the path name is imap_npy+[_ambient/_direct]/[test/train]
+        # usage example python3 data/imap_npy/train data/imap_npy/test
+        # should move the same paths to data/imap_npy_ambient/train and /imap_npy_ambient/test
+        for p in test_paths:
+            component_name = os.path.split(p)[1]
+            ambient_path = outpath.replace("imap_npy", "imap_npy_ambient")
+            direct_path = outpath.replace("imap_npy", "imap_npy_direct")
+            new_path_name = os.path.join(outpath, component_name)
+            new_ambient_path = os.path.join(ambient_path, component_name)
+            new_direct_path = os.path.join(direct_path, component_name)
+            os.rename(p, new_path_name)
+            os.rename(p, new_direct_path)
+            os.rename(p, new_ambient_path)
+            print(f"moving {p} --> {new_path_name}")
+            print(f"moving {p} --> {new_direct_path}")
+            print(f"moving {p} --> {new_ambient_path}")
+            print("*****")
+    else:
+        # move the test paths
+        for p in test_paths:
+            component_name = os.path.split(p)[1]
+            new_path_name = os.path.join(outpath, component_name)
+            print(f"moving {p} --> {new_path_name}")
+            os.rename(p, new_path_name)
 
 def main(argv):
     basepath = argv[1]
