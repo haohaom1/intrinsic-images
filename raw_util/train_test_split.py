@@ -54,9 +54,9 @@ def train_test_split(basepath, outpath, ratio=0.8, imap=False):
             os.rename(old_direct_name, new_direct_name)
             os.rename(old_ambient_name, new_ambient_name)
 
-            print(f"moving {p} --> {new_path_name}")
-            print(f"moving {p} --> {new_direct_path}")
-            print(f"moving {p} --> {new_ambient_path}")
+            print(f"moving {p} --> {new_name}")
+            print(f"moving {old_direct_name} --> {new_direct_name}")
+            print(f"moving {old_ambient_name} --> {new_ambient_name}")
             print("*****")
     else:
         # move the test paths
