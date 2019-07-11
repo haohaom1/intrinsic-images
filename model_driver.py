@@ -25,6 +25,7 @@ def main(argv):
     BATCH_SIZE = 64
     NUM_MMAPS_PER_IMAP = 5
     LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * NUM_MMAPS_PER_IMAP)
+    print("length of data ", LEN_DATA)
     EPOCHS = 1
 
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
