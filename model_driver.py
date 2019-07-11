@@ -7,6 +7,7 @@ import data_gen
 
 # hardcoded
 from models.janknet.janknet_separation import JankNet
+from models.unet.unet_separation import UNet
 
 def main(argv):
 
@@ -18,6 +19,9 @@ def main(argv):
 
     if model_name == "janknet":
         net = JankNet()
+
+    elif model_name == 'unet':
+        net = UNet()
     else:
         print(f"model name {model_name} not found")
         exit(-1)
@@ -25,7 +29,7 @@ def main(argv):
     BATCH_SIZE = 64
     NUM_MMAPS_PER_IMAP = 5
     LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * NUM_MMAPS_PER_IMAP)
-    EPOCHS = 1
+    EPOCHS = 50
 
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     # checkpoint
