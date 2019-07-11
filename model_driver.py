@@ -31,7 +31,7 @@ def main(argv):
     # checkpoint
     filepath= "./weights-janknet-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
     # save the minimum loss
-    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=2, save_best_only=False)
+    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=False)
     callbacks_list = [checkpoint]
     # Fit the model
     history_obj = net.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_imaps_per_mmap=NUM_MMAPS_PER_IMAP), callbacks_list)
