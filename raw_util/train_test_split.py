@@ -60,7 +60,7 @@ def train_test_split(basepath, outpath, ratio=0.8, imap=False):
 def main(argv):
     basepath = argv[1]
     outpath = argv[2]
-    train_test_split(basepath, outpath)
+    train_test_split(basepath, outpath, imap=True)
 
 if __name__ == "__main__":
     main(sys.argv)
