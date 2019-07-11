@@ -36,18 +36,24 @@ def train_test_split(basepath, outpath, ratio=0.8, imap=False):
         # usage example python3 data/imap_npy/train data/imap_npy/test
         # should move the same paths to data/imap_npy_ambient/train and /imap_npy_ambient/test
         for p in test_paths:
-            component_name = os.path.split(p)[1]
-            ambient_path = outpath.replace("imap_npy", "imap_npy_ambient")
-            direct_path = outpath.replace("imap_npy", "imap_npy_direct")
-            new_path_name = os.path.join(outpath, component_name)
-            new_ambient_path = os.path.join(ambient_path, component_name)
-            new_direct_path = os.path.join(direct_path, component_name)
-            print("HELLOOOO")
-            print(p)
-            print(new_direct_path)
-            os.rename(p, new_path_name)
-            os.rename(p, new_direct_path)
-            os.rename(p, new_ambient_path)
+            basepath, component_name = os.path.split(p)
+
+            old_ambient_path = basepath.replace("imap_npy", "imap_npy_ambient")
+            old_direct_path = basepath.replace("imap_npy", "imap_npy_direct")
+            old_ambient_name = os.path.join(old_ambient_path, component_name)
+            old_direct_name = os.path.join(old_direct_path, component_name)
+
+            ambient_outpath = outpath.replace("imap_npy", "imap_npy_ambient")
+            direct_outpath = outpath.replace("imap_npy", "imap_npy_direct")
+
+            new_name = os.path.join(outpath, component_name)
+            new_ambient_name = os.path.join(ambient_outpath, component_name)
+            new_direct_name = os.path.join(direct_outpath, component_name)
+
+            os.rename(p, new_name)
+            os.rename(old_direct_name, new_direct_name)
+            os.rename(old_ambient_name, new_ambient_name)
+
             print(f"moving {p} --> {new_path_name}")
             print(f"moving {p} --> {new_direct_path}")
             print(f"moving {p} --> {new_ambient_path}")
