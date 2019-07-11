@@ -6,6 +6,16 @@ import sys
 import random
 
 
+def rename_paths(basepath, orig_string, replace_string=""):
+    ''' renames paths from basepath/name (containing) to basepath/name (replace string) - 
+        essentially does name.replace(orig_string, replace_string)
+    '''
+    for d in os.listdir(basepath):
+        orig_name = os.path.join(basepath, d)
+        new_component = d.replace(orig_string, replace_string)
+        new_name = os.path.join(basepath, new_component)
+        os.rename(orig_name, new_name)
+        print(f"moving {orig_name} --> {new_name}")
 
 
 def train_test_split(basepath, outpath, ratio=0.8):
