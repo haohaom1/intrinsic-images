@@ -34,7 +34,7 @@ def main(argv):
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=2, save_best_only=False)
     callbacks_list = [checkpoint]
     # Fit the model
-    history_obj = net.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_mmaps_per_imap=NUM_MMAPS_PER_IMAP), callbacks_list)
+    history_obj = net.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_imaps_per_mmap=NUM_MMAPS_PER_IMAP), callbacks_list)
     # save the history object to a pickle file
     json.dump(history_obj.history, open(history_path + "_" + curtime, "w"))
 
