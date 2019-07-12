@@ -11,7 +11,7 @@ maan/
 **/.vscode
 
 # don't upload test data
-*.png
+# *.png
 *.jpg
 *.jpeg
 *.npy
