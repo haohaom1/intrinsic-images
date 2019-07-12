@@ -55,11 +55,13 @@ We also separated our database into a training set and a test set, using a 80-20
 <div class="clear"></div>
 </div>
 
-<div style="display: block; float: left; margin-bottom: 20px;">
-    <img src="./sample_data/imap_png/imap_npy_ambient/train/fractal0.png" width="150" height="150"> 
-    <img src="./sample_data/extra/plus.png" width="150" height="150"> 
-    <img src="./sample_data/imap_png/imap_npy_direct/train/fractal0.png" width="150" height="150">
-    <img src="./sample_data/extra/equals.png" width="150" height="150"> 
+Ambient Illumination map + Direct Illumination Map = Illumination map
+
+<div style="display: block; float: left; margin-top: 20px; margin-bottom: 20px;">
     <img src="./sample_data/imap_png/imap_npy/train/fractal0.png" width="150" height="150"> 
+    <img src="./sample_data/extra/mult.png" width="150" height="150"> 
+    <img src="./sample_data/mmap_png/frame_manyseed0002.png" width="150" height="150">
+    <img src="./sample_data/extra/equals.png" width="150" height="150"> 
+    <img src="./sample_data/mult_png/mult-fractal0-frame_manyseed0002-3.png" width="150" height="150"> 
 <div class="clear"></div>
 </div>
