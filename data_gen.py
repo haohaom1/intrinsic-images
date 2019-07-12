@@ -28,7 +28,7 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
     mmap_files = [x for x in os.listdir(path_mmap) if x.endswith('npy')]
 
     while True:
-        all_mmap_files = mmap_files * num_imaps_per_mmap    # default to 5 copies of list of mm
+        all_mmap_files = mmap_files * num_imaps_per_mmap    # default to 4 copies of list of mm
 
         # shuffle the two lists
         random.shuffle(all_mmap_files)
