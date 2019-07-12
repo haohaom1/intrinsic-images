@@ -46,4 +46,9 @@ We also separated our database into a training set and a test set, using a 80-20
 
 # Example
 
-![alt text](./sample_data/image_png/imap_npy_ambient/train/fractal0.png)
+<div style="display: block; float: left; margin-bottom: 20px;">
+      <img src="./sample_data/imap_png/imap_npy_ambient/train/fractal0.png" width="250" height="250"> 
+      <img src="./sample_data/imap_png/imap_npy_direct/train/fractal0.png" width="250" height="250">
+      <img src="./sample_data/imap_png/imap_npy/train/fractal0.png" width="250" height="250"> 
+<div class="clear"></div>
+</div>
