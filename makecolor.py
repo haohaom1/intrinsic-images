@@ -24,13 +24,7 @@ import matplotlib.pyplot as plt
 import imageio
 
 # appends path to custom function
-sys.path.insert(0, './fractal/src')
-sys.path.insert(0, './stripes/src')
-
-import fractal
-import singlegen
-
-
+from imapUtil import fractal, singlegen
 
 def main(argv):
     if len(argv) < 2:
