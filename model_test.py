@@ -31,12 +31,14 @@ def main(path_imap, path_mmap, batch_size, model_weights, num_imaps_per_mmap):
         print(f"ratio: num imaps {num_imaps_per_mmap} must be greater than 0")
         exit(-1)
 
-    model = load_model(model_weights, custom_objects={'imap_only_loss': imap_only_loss})
+    saved_model = load_model(model_weights, custom_objects={'imap_only_loss': imap_only_loss})
+
+    print(saved_model.summary())
 
     LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * num_imaps_per_mmap)
     print("number of samples in data ", LEN_DATA)
         
-    output = model.evaluate(LEN_DATA, batch_size, data_gen(path_imap, path_mmap, num_imaps_per_mmap=NUM_MMAPS_PER_IMAP))
+    output = saved_model.evaluate_generator(data_gen.generator(path_imap, path_mmap, num_imaps_per_mmap=num_imaps_per_mmap), steps= LEN_DATA / batch_size, verbose=1)
 
     print(output)
 
@@ -50,7 +52,7 @@ if __name__ == "__main__":
     parser.add_argument('path_imap', help='directory where the imap npy files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('path_mmap', help='directory where the imap files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('batch_size', help='calculate ambient and direct store imap', default=64, type=int)
-    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode")
+    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int)
     parser.add_argument('model_weights', help="path to the weights file to reconstruct the model")
 
     args = parser.parse_args()
