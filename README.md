@@ -65,3 +65,5 @@ Ambient Illumination map + Direct Illumination Map = Illumination map
     <img src="./sample_data/mult_png/mult-fractal0-frame_manyseed0002-3.png" width="150" height="150"> 
 <div class="clear"></div>
 </div>
+
+Illumination map * Material Map = Final Image
