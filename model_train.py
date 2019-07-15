@@ -37,9 +37,11 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         print(f"model name {model_name} not found")
         exit(-1)
 
-    LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * num_imaps_per_mmap)
-    print("number of samples in data ", LEN_DATA)
+    num_list_imap = len([x for x in os.listdir(path_imap) if x.endswith('npy')])
+    num_list_mmap = len([x for x in os.listdir(path_mmap) if x.endswith('npy')])
 
+    LEN_DATA = min(num_list_imap, num_list_mmap * num_imaps_per_mmap)
+    print("number of samples in data ", LEN_DATA)
         
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     # checkpoint
@@ -48,7 +50,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=(not save_all))
     callbacks_list = [checkpoint]
     # Fit the model
-    history_obj = net.train(LEN_DATA, BATCH_SIZE, EPOCHS, data_gen.generator(path_imap, path_mmap, num_imaps_per_mmap=NUM_MMAPS_PER_IMAP), callbacks_list)
+    history_obj = net.train(LEN_DATA, batch_size, num_epochs, data_gen.generator(path_imap, path_mmap, num_imaps_per_mmap=num_imaps_per_mmap), callbacks_list)
     # save the history object to a pickle file
 
     if hist_path:
