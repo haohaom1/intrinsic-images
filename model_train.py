@@ -66,7 +66,7 @@ if __name__ == "__main__":
     parser.add_argument('path_mmap', help='directory where the imap files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('batch_size', help='calculate ambient and direct store imap', default=64, type=int)
     parser.add_argument('num_epochs', help='number of epochs to train - irrelevant if in test mode', default=25, type=int)
-    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode")
+    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int)
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
     parser.add_argument('--save_all', '-s', help="save weights of all epochs if this flag is set", action='store_true')
