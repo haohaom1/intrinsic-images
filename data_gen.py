@@ -37,7 +37,7 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
         # maxlen will be the length of the zip
         zip_len = min(len(all_mmap_files), len(imap_files))
         rem = zip_len % batch_size
-        max_len = zip_len - batch_size
+        max_len = zip_len - rem
 
         # this generates an iterable zip
         z = zip(all_mmap_files, imap_files)
