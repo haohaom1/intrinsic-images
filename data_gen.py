@@ -16,7 +16,7 @@ import cv2
 # NOTE: zip takes care of the nondivisible issue, anything that is extra 
 # from either list is truncated off 
 
-def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=128, batch_size=64):
+def generator(path_imap, path_mmap, valid_len_data, log=False, num_imaps_per_mmap=4, resolution=128, batch_size=64):
 
     '''
     Takes two paths, and creates a generator
@@ -28,6 +28,9 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
     mmap_files = [x for x in os.listdir(path_mmap) if x.endswith('npy')]
 
     while True:
+
+        # the start of the next epoch
+
         all_mmap_files = mmap_files * num_imaps_per_mmap    # default to 4 copies of list of mm
 
         # shuffle the two lists
@@ -36,8 +39,11 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
 
         # maxlen will be the length of the zip
         zip_len = min(len(all_mmap_files), len(imap_files))
+
         rem = zip_len % batch_size
         max_len = zip_len - rem
+
+        assert(valid_len_data == max_len)
 
         # this generates an iterable zip
         z = zip(all_mmap_files, imap_files)
