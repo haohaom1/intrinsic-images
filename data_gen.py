@@ -16,7 +16,7 @@ import cv2
 # NOTE: zip takes care of the nondivisible issue, anything that is extra 
 # from either list is truncated off 
 
-def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=128):
+def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=128, batch_size=64):
 
     '''
     Takes two paths, and creates a generator
@@ -54,7 +54,7 @@ def generator(path_imap, path_mmap, log=False, num_imaps_per_mmap=4, resolution=
             batch_res = []
             batch_imap = []
             batch_mmap = []
-            for f_mmap, f_imap in batch_files:
+            for file_mmap, file_imap in batch_files:
 
                 mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
                 imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)
