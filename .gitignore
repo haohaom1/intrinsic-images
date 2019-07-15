@@ -21,6 +21,9 @@ maan/
 *.tif
 *.CR2
 
+# include everything from sample_data
+!sample_data/
+
 # keras stuff
 *.hdf5
 *.h5
