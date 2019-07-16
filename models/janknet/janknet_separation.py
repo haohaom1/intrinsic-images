@@ -59,7 +59,7 @@ class JankNet(SuperModel):
 
 
         self.model = Model(input_img, decoded_imap)
-        self.model.compile(optimizer='adam', loss=self.imap_only_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.imap_only_loss, validation_split=0.1, metrics=['mse'])
         
         
     def imap_only_loss(self, true_img, pred_img):
