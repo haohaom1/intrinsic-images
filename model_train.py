@@ -17,7 +17,7 @@ from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, save_all=False):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, save_best_only=False):
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
@@ -54,7 +54,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     full_filepath = os.path.join(f"./models/{model_name}/", filepath)
     # save the minimum loss
-    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=(not save_all))
+    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=(save_best_only))
     callbacks_list = [checkpoint]
     # Fit the model
     history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, data_gen.generator(path_imap, path_mmap, VALID_LEN_DATA, num_imaps_per_mmap=num_imaps_per_mmap), callbacks_list)
@@ -70,11 +70,11 @@ if __name__ == "__main__":
     parser.add_argument('path_imap', help='directory where the imap npy files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('path_mmap', help='directory where the imap files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('batch_size', help='calculate ambient and direct store imap', default=64, type=int)
-    parser.add_argument('num_epochs', help='number of epochs to train - irrelevant if in test mode', default=25, type=int)
-    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int)
+    parser.add_argument('num_epochs', help='number of epochs to train - irrelevant if in test mode', default=20, type=int)
+    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int, default=5)
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
-    parser.add_argument('--save_all', '-s', help="save weights of all epochs if this flag is set", action='store_true')
+    parser.add_argument('--save_best_only', '-s', help="save the weights of only the best epoch if this flag is specified", action='store_true')
 
     args = parser.parse_args()
     args = vars(args)
