@@ -53,7 +53,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     # checkpoint
-    filepath= f"./weights-{model_name}" + "-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
+    filepath= f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
 
     full_filepath = os.path.join(f"./models/{model_name}/", filepath)
     # save the minimum loss
@@ -63,8 +63,9 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, data_gen.generator(path_imap, path_mmap, VALID_LEN_DATA, num_imaps_per_mmap=num_imaps_per_mmap), callbacks_list)
     # save the history object to a pickle file
 
-    if hist_path:
-        json.dump(history_obj.history, open(hist_path + "_" + curtime, "w"))
+    if not hist_path:
+        hist_path = model_name
+    json.dump(history_obj.history, open(os.path.join(f"./models/{model_name}", hist_path + "_" + curtime), "w"))
 
 
 if __name__ == "__main__":
