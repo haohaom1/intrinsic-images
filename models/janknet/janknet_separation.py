@@ -6,9 +6,6 @@ Very minimal architecture similar to Keras basic autoencoder
 Allen Ma
 """
 
-import sys
-sys.path.insert(0, '../')
-
 import keras
 import tensorflow as tf
 import keras.backend
@@ -22,7 +19,7 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
-from supermodel import SuperModel
+from models.supermodel import SuperModel
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
@@ -62,7 +59,7 @@ class JankNet(SuperModel):
 
 
         self.model = Model(input_img, decoded_imap)
-        self.model.compile(optimizer='adam', loss=self.imap_only_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.imap_only_loss, validation_split=0.1, metrics=['mse'])
         
         
     def imap_only_loss(self, true_img, pred_img):

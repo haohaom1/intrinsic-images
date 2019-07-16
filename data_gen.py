@@ -99,7 +99,7 @@ def generator(path_imap, path_mmap, valid_len_data, log=False, num_imaps_per_mma
                 # batch_mmap.append(mmap_cropped)
             
             # in the future, need to return 5, need to take account of this inside model.train()
-            yield np.array(batch_res), np.array(batch_imap) #, np.array(batch_mmap)
+            yield np.array(batch_imap), np.array(batch_imap) #, np.array(batch_mmap)
 
 
             

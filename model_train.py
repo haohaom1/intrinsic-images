@@ -15,6 +15,7 @@ import argparse
 # hardcoded
 from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
+from models.simpleJanknet.simple_janknet import SimpleJankNet
 
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, save_all=False):
 
@@ -33,6 +34,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = JankNet()
     elif model_name == 'unet':
         net = UNet()
+    elif model_name == 'simple_janknet':
+        net = SimpleJankNet()
     else:
         print(f"model name {model_name} not found")
         exit(-1)
