@@ -48,8 +48,10 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
     # checkpoint
     filepath= f"./weights-{model_name}" + "-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
+
+    full_filepath = os.path.join(f"./models/{model_name}/", filepath)
     # save the minimum loss
-    checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=(not save_all))
+    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=(not save_all))
     callbacks_list = [checkpoint]
     # Fit the model
     history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, data_gen.generator(path_imap, path_mmap, VALID_LEN_DATA, num_imaps_per_mmap=num_imaps_per_mmap), callbacks_list)
