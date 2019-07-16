@@ -3,6 +3,9 @@
 # Allen Ma 
 # unet initial experiments with just generating half the imap
 
+import sys
+sys.path.insert(0, '../')
+
 import keras
 import tensorflow as tf
 
@@ -24,9 +27,9 @@ from keras.losses import mse
 
 import data_gen
 
+from supermodel import superModel
 
-
-class UNet():
+class UNet(superModel):
 
 
     def imap_only_loss(self, true_img, pred_img):
