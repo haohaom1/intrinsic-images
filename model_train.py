@@ -35,7 +35,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     elif model_name == 'unet':
         net = UNet()
     elif model_name == 'simple_janknet':
-        net = simpleJankNet()
+        net = SimpleJankNet()
     else:
         print(f"model name {model_name} not found")
         exit(-1)
