@@ -40,6 +40,9 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         print(f"model name {model_name} not found")
         exit(-1)
 
+    print(f"model name is {model_name}")
+    net.model.summary()
+
     num_list_imap = len([x for x in os.listdir(path_imap) if x.endswith('npy')])
     num_list_mmap = len([x for x in os.listdir(path_mmap) if x.endswith('npy')])
 
