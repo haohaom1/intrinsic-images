@@ -11,6 +11,8 @@ Mike Fu
 import sys
 sys.path.insert(0, '../')
 
+import os
+
 import keras
 import tensorflow as tf
 import keras.backend
@@ -69,9 +71,15 @@ class JankNet(superModel):
         
         
     def imap_only_loss(self, true_img, pred_img):
-       return K.mean(K.square(true_img - pred_img))
+       return K.mean(K.square(0.5 * true_img - pred_img))
         
-
-
+'''
+generator that returns an imap
+'''
+def simple_generator(path):
+    
+    for fname in os.listdir():
+        if fname.endswith('npy'):
+            pass
 
 
