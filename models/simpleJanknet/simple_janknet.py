@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
 
-Very minimal architecture similar to Keras basic autoencoder 
+Very minimal architecture
+Task: produce a imap that is half of the one fed in
 
-Allen Ma
+Mike Fu
+
 """
 
 import sys
@@ -33,7 +35,8 @@ from supermodel import superModel
 class JankNet(superModel):
     def __init__(self, input_size=(128, 128, 3)):
 
-        input_img = Input(shape=(128,128,3))
+        # define input
+        input_img = Input(shape=input_size)
 
         # encoder layer
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(input_img)
@@ -67,25 +70,6 @@ class JankNet(superModel):
         
     def imap_only_loss(self, true_img, pred_img):
        return K.mean(K.square(true_img - pred_img))
-
-
-    # def __str__(self):
-    #     return self.model.summary()
-    
-    # def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
-    #     '''
-    #         call this to train the network
-    #         gen - a generator function to pass into model.fit_generator()
-    #     '''
-    #     return self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=1)
-
-    # def evaluate(self, len_data, batch_size, gen, callbacks_list=[]):
-    #     '''
-    #         call this to run keras evaluate_generator on the network
-    #     '''
-    #     return self.model.evaluate_generator(gen, steps=len_data / batch_size, verbose=1)
-
-        
         
 
 

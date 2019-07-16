@@ -35,8 +35,8 @@ class UNet(superModel):
     def imap_only_loss(self, true_img, pred_img):
         return K.mean(K.square(true_img * 0.5 - pred_img))
 
-    def __init__(self):
-        input_img = Input(shape=(128, 128, 3))
+    def __init__(self, input_size=(128, 128, 3)):
+        input_img = Input(shape=input_size)
 
         # contraction stage
 
