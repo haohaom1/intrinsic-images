@@ -17,7 +17,7 @@ from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, save_best_only=False):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None):
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
@@ -57,7 +57,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     full_filepath = os.path.join(f"./models/{model_name}/", filepath)
     # save the minimum loss
-    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=(save_best_only))
+    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1)
     callbacks_list = [checkpoint]
     # Fit the model
     history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, data_gen.generator(path_imap, path_mmap, VALID_LEN_DATA, num_imaps_per_mmap=num_imaps_per_mmap), callbacks_list)
@@ -66,8 +66,9 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     if not hist_path:
         hist_path = model_name
     json.dump(history_obj.history, open(os.path.join(f"./models/{model_name}", hist_path + "_" + curtime), "w"))
-    print(f"saving model to {full_filepath}")
-    net.model.save(full_filepath)
+    final_epoch_fpath = os.path.join(f"./models/{model_name}", "final_epoch_weights.hdf5")
+    print(f"saving model to {final_epoch_fpath}")
+    net.model.save(final_epoch_fpath)
 
 
 if __name__ == "__main__":
@@ -80,7 +81,6 @@ if __name__ == "__main__":
     parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int, default=5)
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
-    parser.add_argument('--save_best_only', '-s', help="save the weights of only the best epoch if this flag is specified", action='store_true')
 
     args = parser.parse_args()
     args = vars(args)
