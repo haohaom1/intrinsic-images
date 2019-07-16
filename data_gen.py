@@ -92,13 +92,14 @@ def generator(path_imap, path_mmap, valid_len_data, log=False, num_imaps_per_mma
                 # resize by rescaling
                 res_cropped = cv2.resize(res, (resolution, resolution), interpolation=cv2.INTER_AREA)
                 imap_cropped = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
-                mmap_cropped = cv2.resize(mmap, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                # mmap_cropped = cv2.resize(mmap, (resolution, resolution), interpolation=cv2.INTER_AREA)
 
                 batch_res.append(res_cropped)
                 batch_imap.append(imap_cropped)
-                batch_mmap.append(mmap_cropped)
+                # batch_mmap.append(mmap_cropped)
             
-            yield np.array(batch_res), np.array(batch_imap), np.array(batch_mmap)
+            # in the future, need to return 5, need to take account of this inside model.train()
+            yield np.array(batch_res), np.array(batch_imap) #, np.array(batch_mmap)
 
 
             
