@@ -27,9 +27,9 @@ from keras.losses import mse
 
 import data_gen
 
-from supermodel import superModel
+from supermodel import SuperModel
 
-class UNet(superModel):
+class UNet(SuperModel):
 
 
     def imap_only_loss(self, true_img, pred_img):

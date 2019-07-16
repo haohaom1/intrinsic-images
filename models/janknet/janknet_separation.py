@@ -22,7 +22,7 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
-from supermodel import superModel
+from supermodel import SuperModel
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
@@ -30,7 +30,7 @@ from supermodel import superModel
 
 # input_img = Input(shape=(128, 128, 3))  # adapt this if using `channels_first` image data format
 
-class JankNet(superModel):
+class JankNet(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
         input_img = Input(shape=(128,128,3))
