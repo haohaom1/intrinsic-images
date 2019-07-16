@@ -3,9 +3,6 @@
 # Allen Ma 
 # unet initial experiments with just generating half the imap
 
-import sys
-sys.path.insert(0, '../')
-
 import keras
 import tensorflow as tf
 
@@ -27,7 +24,7 @@ from keras.losses import mse
 
 import data_gen
 
-from supermodel import SuperModel
+from models.supermodel import SuperModel
 
 class UNet(SuperModel):
 

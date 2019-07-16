@@ -8,10 +8,6 @@ Task: produce a imap that is half of the one fed in
 Mike Fu
 
 """
-
-import sys
-sys.path.insert(0, '../../')
-
 import os
 
 import keras
@@ -27,7 +23,7 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
-from supermodel import SuperModel
+from models.supermodel import SuperModel
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
@@ -35,7 +31,7 @@ from supermodel import SuperModel
 
 # input_img = Input(shape=(128, 128, 3))  # adapt this if using `channels_first` image data format
 
-class JankNet(SuperModel):
+class SimpleJankNet(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
         # define input

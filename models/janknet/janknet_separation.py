@@ -6,9 +6,6 @@ Very minimal architecture similar to Keras basic autoencoder
 Allen Ma
 """
 
-import sys
-sys.path.insert(0, '../')
-
 import keras
 import tensorflow as tf
 import keras.backend
@@ -22,7 +19,7 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
-from supermodel import SuperModel
+from models.supermodel import SuperModel
 
 # true image is the illumination map that was used to construct the input image
 # pred image is the generated illumination map * 0.5 
