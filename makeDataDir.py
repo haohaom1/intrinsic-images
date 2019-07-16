@@ -15,8 +15,9 @@ passed in directory
         -> train
         -> test
 -> mmap
-    -> train
-    -> test
+    -> mmap_npy
+        -> train
+        -> test
 
 '''
 
@@ -59,10 +60,15 @@ def main(argv):
 
         # make mmap directory
         elif typ == 'mmap':
+
+            level1 = os.path.join(level0, 'mmap_npy')
+            if not os.path.isdir(level1):
+                os.mkdir(level1)
+
             for t in tt:
-                level1 = os.path.join(level0, t)
-                if not os.path.isdir(level1):
-                    os.mkdir(level1)
+                level2 = os.path.join(level1, t)
+                if not os.path.isdir(level2):
+                    os.mkdir(level2)
 
 if __name__ == "__main__":
     main(sys.argv)
