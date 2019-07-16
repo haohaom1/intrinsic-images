@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 
-Very minimal architecture
+Very minimal architecture, inspired by Bruce Maxwell's autoencoder for MNIST
+Might need to add more channels / layers
 Task: produce a imap that is half of the one fed in
 
 Mike Fu
@@ -41,30 +42,22 @@ class JankNet(SuperModel):
         input_img = Input(shape=input_size)
 
         # encoder layer
-        x = Conv2D(8, (3, 3), activation='selu', padding='same')(input_img)
+        x = Conv2D(16, (3, 3), activation='selu', padding='same')(input_img)
         x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
-        x = MaxPooling2D((2, 2), padding='same')(x)
-        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (1, 1), activation='sigmoid', padding='same')(x)
-        encoded = MaxPooling2D((2, 2), padding='same')(x)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
+        encoded = Conv2D(2, (1, 1), activation='sigmoid', padding='same')(x)
         # ensure everything is between 0 and 1
 
         # at this point the representation is (16, 16, 32) i.e. 2048-dimensional
 
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(encoded)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(encoded)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
-        x = UpSampling2D((2, 2))(x)
-        x = Conv2D(1, (3, 3), activation='selu', padding='same')(x)
-        x = UpSampling2D((2, 2))(x)
         decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
-
 
         self.model = Model(input_img, decoded_imap)
         self.model.compile(optimizer='adam', loss=self.imap_only_loss, metrics=['mse'])
@@ -73,13 +66,3 @@ class JankNet(SuperModel):
     def imap_only_loss(self, true_img, pred_img):
        return K.mean(K.square(0.5 * true_img - pred_img))
         
-'''
-generator that returns an imap
-'''
-def simple_generator(path):
-    
-    for fname in os.listdir():
-        if fname.endswith('npy'):
-            pass
-
-
