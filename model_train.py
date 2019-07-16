@@ -67,7 +67,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         hist_path = model_name
     json.dump(history_obj.history, open(os.path.join(f"./models/{model_name}", hist_path + "_" + curtime), "w"))
     print(f"saving model to {full_filepath}")
-    model.save(full_filepath)
+    net.model.save(full_filepath)
 
 
 if __name__ == "__main__":
