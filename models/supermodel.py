@@ -17,7 +17,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
 
-class superModel():
+class SuperModel():
 
     # should override the init for each custom model
     def __init__(self, input_size=(128, 128, 3)):
