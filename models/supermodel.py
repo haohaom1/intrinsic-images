@@ -27,12 +27,12 @@ class SuperModel():
     def __str__(self):
         return self.model.summary()
 
-    def train(self, len_data, batch_size, num_epochs, gen, validation_gen=None, validation_len_data=None, callbacks_list=[]):
+    def train(self, len_data, batch_size, num_epochs, gen, validation_gen=None, validation_len_data=None, callbacks=[]):
         '''
             call this to train the network
             gen - a generator function to pass into model.fit_generator()
         '''
-        return self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=1, validation_data=validation_gen, validation_steps= validation_len_data / batch_size)
+        return self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=1, validation_data=validation_gen, validation_steps= validation_len_data / batch_size, callbacks=callbacks)
 
 
     def evaluate(self, len_data, batch_size, gen, callbacks_list=[]):
