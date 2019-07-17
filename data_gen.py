@@ -5,38 +5,33 @@ import random
 import argparse
 import cv2
 
-# NOTE: hardcoding is as follows
-# imap_npy has 4800 images
-# mmap_npy has 1200 images
-# so by design, we multiply mmap * 4
-# batch size 64 bc 4800 / 64 = 75 which is cleanly divisible
-# file paths are hardcoded for the linux dwarves
-# - Allen 2 July
 
 # NOTE: zip takes care of the nondivisible issue, anything that is extra 
 # from either list is truncated off 
 
-def generator(path_imap, path_mmap, valid_len_data, log=False, num_imaps_per_mmap=4, resolution=128, batch_size=64):
+
+def generator(imap_files, mmap_files, valid_len_data, log=False, resolution=128, batch_size=64):
 
     '''
-    Takes two paths, and creates a generator
+    Takes two paths, and creates a generator to yield batches of data
+    Can be used for training and validation data
+    # Arguments
+        imap_files = a list of filenames (strings) of npy files each containing an illumination map
+        mmap_files = a list of filenames (strings) of npy files, each containing a material map
+            Note that mmap_files has the number of imaps_per_mmap PRE-MULTIPLIED, so there will be NUM_IMAPS_PER_MMAP copies of each mmap npy
+        valid_len_data = the valid length of the data, should be fully divisible by batch size
+        log = default False. If true, then it takes the log of all the images, and adds a small shift to ensure the values are > 1
+        resolution = default 128, square size of the image
+        batch_size = default 64. batch size to use for training
     '''
-    # assert that the path exists
-    assert os.path.isdir(path_imap) and os.path.isdir(path_mmap)
-
-    imap_files = [x for x in os.listdir(path_imap) if x.endswith('npy')]
-    mmap_files = [x for x in os.listdir(path_mmap) if x.endswith('npy')]
-
-    all_mmap_files = mmap_files * num_imaps_per_mmap
 
     # maxlen will be the length of the zip
-    zip_len = min(len(all_mmap_files), len(imap_files))
+    zip_len = min(len(mmap_files), len(imap_files))
 
     rem = zip_len % batch_size
     max_len = zip_len - rem
 
     assert(valid_len_data == max_len)
-
 
     assert(max_len % batch_size == 0)
 
