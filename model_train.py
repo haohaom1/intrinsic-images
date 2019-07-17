@@ -82,8 +82,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     # Fit the model
     history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-        data_gen.generator(imap_files_train, mmap_files_train, VALID_LEN_DATA),
-        validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, VALID_VALIDATION_LEN_DATA),
+        data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, VALID_LEN_DATA),
+        validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, VALID_VALIDATION_LEN_DATA),
         validation_len_data = VALID_VALIDATION_LEN_DATA,
         callbacks=callbacks_list)
     # save the history object to a pickle file

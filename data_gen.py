@@ -10,7 +10,7 @@ import cv2
 # from either list is truncated off 
 
 
-def generator(imap_files, mmap_files, valid_len_data, log=False, resolution=128, batch_size=64):
+def generator(imap_files, mmap_files, path_mmap, path_imap, valid_len_data, log=False, resolution=128, batch_size=64):
 
     '''
     Takes two paths, and creates a generator to yield batches of data
