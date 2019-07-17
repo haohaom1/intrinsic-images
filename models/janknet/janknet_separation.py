@@ -64,7 +64,7 @@ class JankNet(SuperModel):
         
         
     def imap_only_loss(self, true_img, pred_img):
-       return K.mean(K.square(true_img - pred_img))
+       return K.mean(K.square(0.5 * true_img - pred_img))
 
 
     # def __str__(self):
