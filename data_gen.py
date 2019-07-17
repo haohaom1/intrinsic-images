@@ -46,7 +46,7 @@ def generator(imap_files, mmap_files, valid_len_data, log=False, resolution=128,
         random.shuffle(imap_files)
 
         # this generates an iterable zip (iterables are generators)
-        z = zip(all_mmap_files, imap_files)
+        z = zip(mmap_files, imap_files)
 
         # this is for one epoch: always ensure that the number of samples in an epoch
         # is fully divisible by batch size
