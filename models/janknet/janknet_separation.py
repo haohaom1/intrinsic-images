@@ -48,12 +48,13 @@ class JankNet(SuperModel):
         # at this point the representation is (16, 16, 32) i.e. 2048-dimensional
 
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(encoded)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(encoded)
+        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
-        x = UpSampling2D((2, 2))(x)
-        x = Conv2D(1, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
