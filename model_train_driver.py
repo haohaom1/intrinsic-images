@@ -11,12 +11,12 @@ def main(argv):
     if len(argv) < 6:
         print("[user] [device name] [batch size] [epochs] [num_imaps_per_mmap] [model name]")
 
-    user = argv[0]
-    device = argv[1]
-    batch = argv[2]
-    epoch = argv[3]
-    num = argv[4]
-    model = argv[5]
+    user = argv[1]
+    device = argv[2]
+    batch = argv[3]
+    epoch = argv[4]
+    num = argv[5]
+    model = argv[6]
 
     os.system(f"python3 model_train.py /media/{user}/{device}/intrinsic-images/data/imap/imap_npy/train/ \
         /media/{user}/{device}/intrinsic-images/data/mmap/mmap_npy/train/ {batch} {epoch} {num} {model}")
