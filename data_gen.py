@@ -42,7 +42,7 @@ def generator(imap_files, mmap_files, valid_len_data, log=False, resolution=128,
         # the start of the next epoch
 
         # shuffle the two lists
-        random.shuffle(all_mmap_files)
+        random.shuffle(mmap_files)
         random.shuffle(imap_files)
 
         # this generates an iterable zip (iterables are generators)
