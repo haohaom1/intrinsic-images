@@ -46,6 +46,9 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
         # this generates an iterable zip (iterables are generators)
         z = zip(mmap_files, imap_files)
 
+        number_of_batches = int(valid_len_data / batch_size)
+        assert(number_of_batches == valid_len_data // batch_size)
+
         # this is for one epoch: always ensure that the number of samples in an epoch
         # is fully divisible by batch size
         # so each batch is the same size
