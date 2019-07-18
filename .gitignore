@@ -22,7 +22,7 @@ maan/
 *.CR2
 
 # include everything from sample_data
-!sample_data/*/*/*
+!sample_data/
 
 # keras stuff
 
