@@ -66,7 +66,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     if not hist_path:
         hist_path = model_name
     json.dump(history_obj.history, open(os.path.join(f"./models/{model_name}", hist_path + "_" + curtime), "w"))
-    final_epoch_fpath = os.path.join(f"./models/{model_name}_{curtime}", "final_epoch_weights.hdf5")
+    final_epoch_fpath = os.path.join(f"./models/{model_name}", f"final_epoch_weights_{curtime}.hdf5")
     print(f"saving model to {final_epoch_fpath}")
     net.model.save(final_epoch_fpath)
 
