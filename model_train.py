@@ -83,12 +83,12 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     print("[model_train.py] number of samples of validation data", VALID_VALIDATION_LEN_DATA)
 
     # make the validation data the length of valid_validation_len_data
-    imap_files_validation = imap_files_validation[VALID_LEN_DATA:]
-    mmap_files_validation = mmap_files_validation[VALID_LEN_DATA:]
+    imap_files_validation = imap_files_validation[:VALID_VALIDATION_LEN_DATA]
+    mmap_files_validation = mmap_files_validation[:VALID_VALIDATION_LEN_DATA]
 
-    # make the training data the length of valid_validation_len_data
-    imap_files_train = imap_files_train[:VALID_VALIDATION_LEN_DATA]
-    mmap_files_train = mmap_files_train[:VALID_VALIDATION_LEN_DATA]
+    # make the training data the length of valid_len_data
+    imap_files_train = imap_files_train[:VALID_LEN_DATA]
+    mmap_files_train = mmap_files_train[:VALID_LEN_DATA]
 
     assert(len(imap_files_train) == len(mmap_files_train))
     assert(len(imap_files_validation) == len(mmap_files_validation))
