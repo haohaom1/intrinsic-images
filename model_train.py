@@ -18,7 +18,7 @@ from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False):
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
@@ -64,6 +64,9 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     LEN_DATA = min(len(imap_files), len(mmap_files))
 
+    if no_validation:
+        validation_split = 0
+
     validation_len_data = int(validation_split * LEN_DATA)
     train_len_data = LEN_DATA - validation_len_data
 
@@ -79,6 +82,10 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     VALID_LEN_DATA = train_len_data - train_len_data % batch_size
     VALID_VALIDATION_LEN_DATA = validation_len_data - validation_len_data % batch_size
 
+    if no_validation:
+        print("not using validation")
+    else:
+        print("using validation")
     print("[model_train.py] number of samples of training data", VALID_LEN_DATA)
     print("[model_train.py] number of samples of validation data", VALID_VALIDATION_LEN_DATA)
 
@@ -96,13 +103,20 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     assert(len(imap_files_validation) == VALID_VALIDATION_LEN_DATA)
     assert(len(imap_files_train) == VALID_LEN_DATA)
 
-    # Fit the model
-    history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-        data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
-        validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap),
-        validation_len_data = VALID_VALIDATION_LEN_DATA,
-        callbacks=callbacks_list)
-    # save the history object to a pickle file
+    if no_validation:
+        history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
+            validation_gen = None,
+            validation_len_data = None,
+            callbacks=callbacks_list)
+    else:
+        # Fit the model
+        history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
+            validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap),
+            validation_len_data = VALID_VALIDATION_LEN_DATA,
+            callbacks=callbacks_list)
+        # save the history object to a pickle file
 
     if not hist_path:
         hist_path = model_name
@@ -123,6 +137,7 @@ if __name__ == "__main__":
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
     parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 perc. is used as validation', type=float, default=0.2)
+    parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', type=bool, default="store_true")
 
     args = parser.parse_args()
     args = vars(args)
