@@ -63,7 +63,6 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     mmap_files = mmap_files * num_imaps_per_mmap
 
     LEN_DATA = min(len(imap_files), len(mmap_files))
-    print("number of samples in data ", LEN_DATA)
 
     validation_len_data = int(validation_split * LEN_DATA)
     train_len_data = LEN_DATA - validation_len_data
@@ -80,10 +79,27 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     VALID_LEN_DATA = train_len_data - train_len_data % batch_size
     VALID_VALIDATION_LEN_DATA = validation_len_data - validation_len_data % batch_size
 
+    print("[model_train.py] number of samples of training data", VALID_LEN_DATA)
+    print("[model_train.py] number of samples of validation data", VALID_VALIDATION_LEN_DATA)
+
+    # make the validation data the length of valid_validation_len_data
+    imap_files_validation = imap_files_validation[VALID_LEN_DATA:]
+    mmap_files_validation = mmap_files_validation[VALID_LEN_DATA:]
+
+    # make the training data the length of valid_validation_len_data
+    imap_files_train = imap_files_train[:VALID_VALIDATION_LEN_DATA]
+    mmap_files_train = mmap_files_train[:VALID_VALIDATION_LEN_DATA]
+
+    assert(len(imap_files_train) == len(mmap_files_train))
+    assert(len(imap_files_validation) == len(mmap_files_validation))
+
+    assert(len(imap_files_validation) == VALID_VALIDATION_LEN_DATA)
+    assert(len(imap_files_train) == VALID_LEN_DATA)
+
     # Fit the model
     history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-        data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, VALID_LEN_DATA),
-        validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, VALID_VALIDATION_LEN_DATA),
+        data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
+        validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap),
         validation_len_data = VALID_VALIDATION_LEN_DATA,
         callbacks=callbacks_list)
     # save the history object to a pickle file

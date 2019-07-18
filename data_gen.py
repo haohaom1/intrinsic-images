@@ -10,7 +10,7 @@ import cv2
 # from either list is truncated off 
 
 
-def generator(imap_files, mmap_files, path_mmap, path_imap, valid_len_data, 
+def generator(imap_files, mmap_files, path_mmap, path_imap,  
               inputs_to_network=None, ground_truth=None,
               log=False, resolution=128, batch_size=64):
 
@@ -21,8 +21,6 @@ def generator(imap_files, mmap_files, path_mmap, path_imap, valid_len_data,
         imap_files = a list of filenames (strings) of npy files each containing an illumination map (pass in the actual imap, not ambient or direct)
         mmap_files = a list of filenames (strings) of npy files, each containing a material map
             NOTE that mmap_files has the number of imaps_per_mmap PRE-MULTIPLIED, so there will be NUM_IMAPS_PER_MMAP copies of each mmap npy
-        valid_len_data = the valid length of the data, should be fully divisible by batch size
-
         inputs_to_network = a list of which types of images to yield in the generator that are fed into the network. 
                 Select from ['ambient', 'direct', 'imap', 'mmap', 'result'].
                 Default to returning the result
@@ -35,17 +33,7 @@ def generator(imap_files, mmap_files, path_mmap, path_imap, valid_len_data,
         batch_size = default 64. batch size to use for training
     '''
 
-    # maxlen will be the length of the zip
-    zip_len = min(len(mmap_files), len(imap_files))
-
-    rem = zip_len % batch_size
-    max_len = zip_len - rem
-
-    assert(valid_len_data == max_len)
-
-    assert(max_len % batch_size == 0)
-
-    number_of_batches = int(valid_len_data / batch_size)
+    valid_len_data = len(imap_files)
 
     while True:
 
