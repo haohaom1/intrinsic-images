@@ -137,7 +137,7 @@ if __name__ == "__main__":
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
     parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 perc. is used as validation', type=float, default=0.2)
-    parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', type=bool, default="store_true")
+    parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', type=bool, action="store_true")
 
     args = parser.parse_args()
     args = vars(args)
