@@ -15,11 +15,14 @@ import json
 def imap_only_loss(true_img, pred_img):
     return K.mean(K.square(0.5 * true_img - pred_img))
 
-
 def main(argv):
-
-    if len(argv) < 5:
-        print('[model_path] [path_imap] [path_mmap] [history_path]')
+    '''
+        angle brackets denote required arguments
+        square brackets denote optional arguments
+        as is the UNIX convention :)
+    '''
+    if len(argv) < 4:
+        print('<model_path> <path_imap> <path_mmap> [history_path]')
         return
 
     model_path = argv[1]
@@ -31,23 +34,26 @@ def main(argv):
     imap_list = [x for x in os.listdir(path_imap) if x.endswith('.npy')]
     mmap_list = [x for x in os.listdir(path_mmap) if x.endswith('.npy')]
 
-    num_to_show = min(len(mmap_list), 3)
+    # number of samples to show
+    num_to_show = min(len(mmap_list), 5)
 
     mmaps = [np.load(os.path.join(path_mmap, x)) for x in np.random.choice(mmap_list, size=num_to_show, replace=False)]
     imaps = [np.load(os.path.join(path_imap, x)) for x in np.random.choice(imap_list, size=num_to_show, replace=False)]
 
     NUM_ITEMS = 5
 
-
-    histoy_path = argv[4]
-    history = json.load(open(histoy_path, "r"))
+    if len(argv) == 4:
+        history = None
+    else:
+        history_path = argv[4]
+        history = json.load(open(history_path, "r"))
 
     plt.figure()
-    gs1 = gridspec.GridSpec(num_to_show+1, 5)
-    gs1.update(wspace=0.025, hspace=0.25) # set the spacing between axes. 
+    gs1 = gridspec.GridSpec(num_to_show+1, NUM_ITEMS)
+    gs1.update(wspace=0.025, hspace=0.15) # set the spacing between axes. 
 
     for i, (mmap, imap) in enumerate(zip(imaps, mmaps)):
-        axRow = [plt.subplot(gs1[i, j]) for j in range(5)]
+        axRow = [plt.subplot(gs1[i, j]) for j in range(NUM_ITEMS)]
         imap = cv2.resize(imap, (128, 128), interpolation=cv2.INTER_AREA)
         mmap = cv2.resize(mmap, (128, 128), interpolation=cv2.INTER_AREA)
         
@@ -65,13 +71,13 @@ def main(argv):
             ax.set_xticklabels([])
             ax.set_yticklabels([])
 
-        
-    ax = plt.subplot(gs1[-1, :])
-    ax.plot(history['loss'], label='loss')
-    ax.plot(history['val_loss'], 'r', label='val_loss')
-    ax.set_xlabel('epoch')
-    ax.set_ylabel('loss')
-    ax.legend()
+    if history:
+        ax = plt.subplot(gs1[-1, :])
+        ax.plot(history['loss'], label='loss')
+        ax.plot(history['val_loss'], 'r', label='val_loss')
+        ax.set_xlabel('epoch')
+        ax.set_ylabel('loss')
+        ax.legend()
 
     plt.show()
 
