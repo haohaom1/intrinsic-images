@@ -67,7 +67,7 @@ def main(argv):
         elif argv[1] == 'stripe':
 
             # generate parameters for stripes
-            image = singlegen.stripe((width, height))
+            image = stripes.stripe((width, height))
             # print(image)
 
             # plt.imshow(image, cmap='gray')
