@@ -44,7 +44,7 @@ def main(argv):
 
     plt.figure()
     gs1 = gridspec.GridSpec(num_to_show+1, 5)
-    gs1.update(wspace=0.025, hspace=0.15) # set the spacing between axes. 
+    gs1.update(wspace=0.025, hspace=0.25) # set the spacing between axes. 
 
     for i, (mmap, imap) in enumerate(zip(imaps, mmaps)):
         axRow = [plt.subplot(gs1[i, j]) for j in range(5)]
