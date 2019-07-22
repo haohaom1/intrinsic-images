@@ -32,7 +32,7 @@ def main(argv):
 
     num_to_show = min(len(mmap_list), 3)
 
-    mmaps = [np.load(os.path.join(path_mmap, x)) for x in mmap_list]
+    mmaps = [np.load(os.path.join(path_mmap, x)) for x in np.random.choice(mmap_list, size=num_to_show, replace=False)]
     imaps = [np.load(os.path.join(path_imap, x)) for x in np.random.choice(imap_list, size=num_to_show, replace=False)]
 
     NUM_ITEMS = 5
