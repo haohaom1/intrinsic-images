@@ -70,6 +70,7 @@ def main(argv):
     ax.plot(history['val_loss'], 'r', label='val_loss')
     ax.set_xlabel('epoch')
     ax.set_ylabel('loss')
+    ax.legend()
 
     plt.show()
 
