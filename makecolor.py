@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import imageio
 
 # appends path to custom function
-from imapUtil import fractal, singlegen
+from imapUtil import fractal, stripes
 
 def main(argv):
     if len(argv) < 2:
