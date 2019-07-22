@@ -58,8 +58,9 @@ def stripe(size):
     endy = int(y+img_height/4)
     rot = rot[startx:endx, starty:endy]
 
-    rot = rot * 255
-    rot = rot.astype(np.uint8)
+    # rot = rot * 255
+    # rot = rot.astype(np.uint8)
+    np.clip(rot, 0., 1.)
 
     return rot
 

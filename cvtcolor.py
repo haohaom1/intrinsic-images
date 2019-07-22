@@ -35,6 +35,7 @@ def addIlluminationColor(image,
     direct_std_intensity = 0.30,
     direct_mean_intensity = 0.80,
     direct_lower_bound_intensity = 0.25,
+    direct_upper_bound_intensity = 0.98,        # used to make hsv2rgb work properly
     min_ambient_direct_ratio = 0.50):
 
     '''
@@ -43,23 +44,24 @@ def addIlluminationColor(image,
     '''
     
     # normalize b/w 0 and 1
-    if np.sum(image > 1) > 0:
-        image = image / 255.
+    # if np.sum(image > 1) > 0:
+    #     print('normalizing')
+    #     image = image / 255.
 
     hue_amb = 2 * np.pi * np.random.rand() * np.ones(image.shape)
-    # sat_amb = min(np.abs(np.random.randn()) * ambient_std_saturation, 1) * np.ones(image.shape)
-    sat_amb = np.clip(np.ones(image.shape) * np.abs(np.random.randn()) * ambient_std_intensity, a_min=None, a_max=1)
-    val_amb = max(np.abs(np.random.randn() * ambient_std_intensity + ambient_mean_intensity), ambient_lower_bound_intensity) * np.ones(image.shape)
-    val_amb = np.clip(np.abs(np.random.randn()) * ambient_std_intensity + ambient_mean_intensity * np.ones(image.shape), a_min=ambient_lower_bound_intensity, a_max=None)
+    # sat_amb = min(np.abs(np.random.rand()) * ambient_std_saturation, 1) * np.ones(image.shape)
+    sat_amb = np.clip(np.ones(image.shape) * np.abs(np.random.rand()) * ambient_std_intensity, a_min=None, a_max=1)
+    val_amb = max(np.abs(np.random.rand() * ambient_std_intensity + ambient_mean_intensity), ambient_lower_bound_intensity) * np.ones(image.shape)
+    val_amb = np.clip(np.abs(np.random.rand()) * ambient_std_intensity + ambient_mean_intensity * np.ones(image.shape), a_min=ambient_lower_bound_intensity, a_max=None)
 
     hue_dir = 2 * np.pi * np.random.rand() * np.ones(image.shape)
-    sat_dir = min(np.abs(np.random.randn()) * direct_std_saturation, 1) * np.ones(image.shape)
+    sat_dir = min(np.abs(np.random.rand()) * direct_std_saturation, 1) * np.ones(image.shape)
     # val_dir = np.abs(image * direct_std_intensity + direct_mean_intensity)
     # val_dir = np.maximum(np.minimum(1., val_dir), direct_lower_bound_intensity) # bounds in [lowerbound, 1]
 
     # bounds between 0% and 70%
-    val_mult = np.abs(np.random.randn()) * direct_std_intensity + direct_mean_intensity
-    val_dir = np.clip(image * val_mult, direct_lower_bound_intensity, 1.)
+    val_mult = np.abs(np.random.rand()) * direct_std_intensity + direct_mean_intensity
+    val_dir = np.clip(image * val_mult, direct_lower_bound_intensity, direct_upper_bound_intensity)
 
     assert(np.sum((val_dir > 1) | (val_dir < 0)) == 0)
     assert(np.sum((val_amb > 1) | (val_amb < 0)) == 0)
@@ -85,8 +87,6 @@ def addIlluminationColor(image,
 
     # adds 2 np.float arrays; image: [0, 2.]
     image = img_amb + img_dir
-    
-    # image = image / [255, 255, 255]
 
     return img_amb, img_dir, image
 
