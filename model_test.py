@@ -52,11 +52,11 @@ def main(argv):
         mmap = cv2.resize(mmap, (128, 128), interpolation=cv2.INTER_AREA)
         
         res = np.clip(imap * mmap, 0, 1)[np.newaxis, :]
-        predImap = model.predict(res) * 2
+        predImap = model.predict(res)
         predMmap = res / predImap
         
         labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
-        to_plot = [imap, mmap, res, predImap, predMmap]
+        to_plot = [imap/2, mmap, res, predImap, predMmap]
         
         for ax, l, p in zip(axRow, labels, to_plot): 
             ax.imshow(p.squeeze())
