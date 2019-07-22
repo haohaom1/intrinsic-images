@@ -10,6 +10,7 @@ import cv2
 import os
 import matplotlib.gridspec as gridspec
 import sys
+import json
 
 def imap_only_loss(true_img, pred_img):
     return K.mean(K.square(0.5 * true_img - pred_img))
@@ -36,7 +37,7 @@ def main(argv):
     # number of samples to show
     num_to_show = min(len(mmap_list), 5)
 
-    mmaps = [np.load(os.path.join(path_mmap, x)) for x in mmap_list]
+    mmaps = [np.load(os.path.join(path_mmap, x)) for x in np.random.choice(mmap_list, size=num_to_show, replace=False)]
     imaps = [np.load(os.path.join(path_imap, x)) for x in np.random.choice(imap_list, size=num_to_show, replace=False)]
 
     NUM_ITEMS = 5
