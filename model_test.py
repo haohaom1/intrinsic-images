@@ -59,10 +59,16 @@ def main(argv):
         
         res = np.clip(imap * mmap, 0, 1)[np.newaxis, :]
         predImap = model.predict(res)
-        predMmap = res / predImap
+
+        # pred mmap should be result divded by twice the predicted imap
+        predMmap = res / (predImap * 2)
         
         labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
-        to_plot = [imap/2, mmap, res, predImap, predMmap]
+
+        # NOTE
+        # imap is shown to be divided by 2 because it is between 0-2
+        # predImap is half of the inputed imap
+        to_plot = [imap/2., mmap, res, predImap, predMmap]
         
         for ax, l, p in zip(axRow, labels, to_plot): 
             ax.imshow(p.squeeze())
