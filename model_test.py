@@ -1,61 +1,77 @@
 '''
-    Allen Ma, Mike Fu
-    Summer Research 2019
-    Driver file to test the models
+Test file that displays the model predictions of imaps
 '''
 
-import sys
-import os
-import json, datetime
+import matplotlib.pyplot as plt
+import numpy as np
 import keras
-from keras.models import load_model, Model
-from keras.callbacks import ModelCheckpoint
 import keras.backend as K
-import data_gen
-import argparse
+import cv2
+import os
+import matplotlib.gridspec as gridspec
+import sys
 
-# hardcoded
-from models.janknet.janknet_separation import JankNet
-from models.unet.unet_separation import UNet
-
-def main(path_imap, path_mmap, batch_size, model_weights, num_imaps_per_mmap):
-
-    if not os.path.isdir(path_imap):
-        print(f"{path_imap} not a valid directory")
-        exit(-1)
-    if not os.path.isdir(path_mmap):
-        print(f"{path_mmap} not a valid directory")
-        exit(-1)
-
-    if num_imaps_per_mmap <= 0:
-        print(f"ratio: num imaps {num_imaps_per_mmap} must be greater than 0")
-        exit(-1)
-
-    saved_model = load_model(model_weights, custom_objects={'imap_only_loss': imap_only_loss})
-
-    print(saved_model.summary())
-
-    LEN_DATA = min(len(os.listdir(path_imap)), len(os.listdir(path_mmap)) * num_imaps_per_mmap)
-    print("number of samples in data ", LEN_DATA)
-        
-    output = saved_model.evaluate_generator(data_gen.generator(path_imap, path_mmap, num_imaps_per_mmap=num_imaps_per_mmap), steps= LEN_DATA / batch_size, verbose=1)
-
-    print(output)
-
-# hardcoded, find a way to integrate this somehow
 def imap_only_loss(true_img, pred_img):
-    return K.mean(K.square(true_img * 0.5 - pred_img))
+    return K.mean(K.square(0.5 * true_img - pred_img))
+
+
+def main(argv):
+
+    if len(argv) < 5:
+        print('[model_path] [path_imap] [path_mmap] [history_path]')
+        return
+
+    model_path = argv[1]
+    model = keras.models.load_model(model_path, custom_objects={'imap_only_loss': imap_only_loss})
+
+    path_imap = argv[2]
+    path_mmap = argv[3]
+
+    imap_list = [x for x in os.listdir(path_imap) if x.endswith('.npy')]
+    mmap_list = [x for x in os.listdir(path_mmap) if x.endswith('.npy')]
+
+    num_to_show = min(len(mmap_list), 3)
+
+    mmaps = [np.load(os.path.join(path_mmap, x)) for x in mmap_list]
+    imaps = [np.load(os.path.join(path_imap, x)) for x in np.random.choice(imap_list, size=num_to_show, replace=False)]
+
+    NUM_ITEMS = 5
+
+
+    histoy_path = argv[4]
+    history = json.load(open(histoy_path, "r"))
+
+    plt.figure()
+    gs1 = gridspec.GridSpec(num_to_show+1, 5)
+    gs1.update(wspace=0.025, hspace=0.15) # set the spacing between axes. 
+
+    for i, (mmap, imap) in enumerate(zip(imaps, mmaps)):
+        axRow = [plt.subplot(gs1[i, j]) for j in range(5)]
+        imap = cv2.resize(imap, (128, 128), interpolation=cv2.INTER_AREA)
+        mmap = cv2.resize(mmap, (128, 128), interpolation=cv2.INTER_AREA)
+        
+        res = np.clip(imap * mmap, 0, 1)[np.newaxis, :]
+        predImap = model.predict(res) * 2
+        predMmap = res / predImap
+        
+        labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
+        to_plot = [imap, mmap, res, predImap, predMmap]
+        
+        for ax, l, p in zip(axRow, labels, to_plot): 
+            ax.imshow(p.squeeze())
+            ax.set_title(l)
+            plt.axis('off')
+            ax.set_xticklabels([])
+            ax.set_yticklabels([])
+
+        
+    ax = plt.subplot(gs1[-1, :])
+    ax.plot(history['loss'], label='loss')
+    ax.plot(history['val_loss'], 'r', label='val_loss')
+    ax.set_xlabel('epoch')
+    ax.set_ylabel('loss')
+
+    plt.show()
 
 if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('path_imap', help='directory where the imap npy files are located. For train, you should specify the train folder. Likewise for test.')
-    parser.add_argument('path_mmap', help='directory where the imap files are located. For train, you should specify the train folder. Likewise for test.')
-    parser.add_argument('batch_size', help='calculate ambient and direct store imap', default=64, type=int)
-    parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int)
-    parser.add_argument('model_weights', help="path to the weights file to reconstruct the model")
-
-    args = parser.parse_args()
-    args = vars(args)
-
-    main(**args)
+    main(sys.argv)
