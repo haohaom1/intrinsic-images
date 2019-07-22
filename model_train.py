@@ -44,7 +44,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     print(f"model name is {model_name}")
     net.model.summary()
     
-    curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M")
+    curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     # checkpoint
     filepath= f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
 
