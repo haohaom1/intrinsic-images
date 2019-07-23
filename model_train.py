@@ -19,7 +19,7 @@ from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth=""):
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
@@ -70,6 +70,20 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     mmap_files = mmap_files * num_imaps_per_mmap 
     LEN_DATA = min(len(imap_files), len(mmap_files))
 
+
+    # check that each element in input images is valid
+    input_to_network = input_to_network.split(",")
+    ground_truth = ground_truth.split(",")
+
+    valid_images = ['ambient', 'direct', 'imap', 'mmap', 'result']
+    for i in input_to_network:
+        if i not in valid_images:
+            raise Exception(f"{i} is not a valid type for input to network")
+    for i in ground_truth:
+        if i not in valid_images:
+            raise Exception(f"{i} is not a valid type for ground truth")
+    
+
     if no_validation:
         validation_split = 0
 
@@ -118,8 +132,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     else:
         # Fit the model
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
-            validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap),
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, input_to_network, ground_truth),
+            validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, input_images, ground_truth),
             validation_len_data = VALID_VALIDATION_LEN_DATA,
             callbacks=callbacks_list)
         # save the history object to a pickle file
@@ -144,6 +158,8 @@ if __name__ == "__main__":
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
     parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 perc. is used as validation', type=float, default=0.2)
     parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', action="store_true")
+    parser.add_argument('--input_images', '-i', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--ground_truth', '-g', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
 
     args = parser.parse_args()
     args = vars(args)

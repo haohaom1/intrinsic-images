@@ -66,7 +66,7 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
         ground_truth = a list of which types of images to yield in the generator that are used as the ground truth
                 Select from ['ambient', 'direct', 'imap', 'mmap', 'result'].
                 Default to returning the imap
-
+        By default, the yield order is: inputs, ground_truth
         log = default False. If true, then it takes the log of all the images, and adds a small shift to ensure the values are > 1
         resolution = default 128, square size of the image
         batch_size = default 64. batch size to use for training
