@@ -48,10 +48,14 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     net.model.summary()
     
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-    # checkpoint
-    filepath= f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}_" + curtime + ".hdf5"
+    # make a directory for this current instance
+    new_dir = f'./models/{model_name}/instance_{curtime}'
+    os.makedirs(new_dir)
 
-    full_filepath = os.path.join(f"./models/{model_name}/", filepath)
+    # checkpoint
+    filepath = f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}" + ".hdf5"
+
+    full_filepath = os.path.join(new_dir, filepath)
     # save the minimum loss
     checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
     callbacks_list = [checkpoint]
@@ -123,8 +127,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     if not hist_path:
         hist_path = model_name
-    json.dump(history_obj.history, open(os.path.join(f"./models/{model_name}", hist_path + "_" + curtime), "w"))
-    final_epoch_fpath = os.path.join(f"./models/{model_name}", f"final_epoch_weights_{curtime}.hdf5")
+    json.dump(history_obj.history, open(os.path.join(new_dir, hist_path + "_" + curtime), "w"))
+    final_epoch_fpath = os.path.join(new_dir, f"final_epoch_weights_{curtime}.hdf5")
     print(f"saving model to {final_epoch_fpath}")
     net.model.save(final_epoch_fpath)
 
