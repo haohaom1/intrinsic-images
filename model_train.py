@@ -158,7 +158,7 @@ if __name__ == "__main__":
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
     parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 perc. is used as validation', type=float, default=0.2)
     parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', action="store_true")
-    parser.add_argument('--input_images', '-i', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--inputs_to_network', '-i', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
     parser.add_argument('--ground_truth', '-g', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
 
     args = parser.parse_args()
