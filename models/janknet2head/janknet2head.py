@@ -48,7 +48,7 @@ class JankNet2Head(SuperModel):
         # at this point the representation is (16, 16, 32) i.e. 2048-dimensional
 
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(encoded)
-        x = Conv2D(64, (3, 3), activation='selu', padding='same')(encoded)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
@@ -58,8 +58,20 @@ class JankNet2Head(SuperModel):
         x = UpSampling2D((2, 2))(x)
         decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
+        # same deconv structure for the mmap
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(encoded)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
+        decoded_mmap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
 
-        self.model = Model(input_img, decoded_imap)
+
+        self.model = Model(input_img, [decoded_imap, decoded_mmap])
         self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
         
         
