@@ -18,8 +18,11 @@ def preprocess(ambient, direct, imap, mmap, log, resolution):
     # resize by rescaling
     imap = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
     mmap = cv2.resize(mmap, (resolution, resolution), interpolation=cv2.INTER_AREA)
-    ambient = cv2.resize(ambient, (resolution, resolution), interpolation=cv2.INTER_AREA)
-    direct = cv2.resize(direct, (resolution, resolution), interpolation=cv2.INTER_AREA)
+    
+    if ambient is not None:
+        ambient = cv2.resize(ambient, (resolution, resolution), interpolation=cv2.INTER_AREA)
+    if direct is not None:
+        direct = cv2.resize(direct, (resolution, resolution), interpolation=cv2.INTER_AREA)
 
     res = np.multiply(mmap, imap)  # element wise multiplication
 
@@ -85,6 +88,15 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
         number_of_batches = int(valid_len_data / batch_size)
         assert(number_of_batches == valid_len_data // batch_size)
 
+        path_amb = path_imap.replace('imap_npy', 'imap_npy_ambient')
+        path_dir = path_imap.replace('imap_npy', 'imap_npy_direct')
+
+        # whether or not to use the imap components
+        explicit_inputs_to_network = ['result'] if not inputs_to_network else inputs_to_network
+        explicit_ground_truth = ['imap'] if not ground_truth else ground_truth
+        use_ambient = 'ambient' in explicit_inputs_to_network or 'ambient' in explicit_ground_truth
+        use_direct = 'direct' in explicit_inputs_to_network or 'direct' in explicit_ground_truth
+
         # this is for one epoch: always ensure that the number of samples in an epoch
         # is fully divisible by batch size
         # so each batch is the same size
@@ -98,15 +110,20 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
             batch_amb = []
             batch_dir = []
 
-            path_amb = path_imap.replace('imap_npy', 'imap_npy_ambient')
-            path_dir = path_imap.replace('imap_npy', 'imap_npy_direct')
-
             for file_mmap, file_imap in batch_files:
 
                 mmap = np.load(os.path.join(path_mmap, file_mmap), allow_pickle=True)
                 imap = np.load(os.path.join(path_imap, file_imap), allow_pickle=True)
-                ambient = np.load(os.path.join(path_amb, file_imap), allow_pickle=True)
-                direct = np.load(os.path.join(path_dir, file_imap), allow_pickle=True)
+
+                if use_ambient:
+                    ambient = np.load(os.path.join(path_amb, file_imap), allow_pickle=True)
+                else:
+                    ambient = None
+
+                if use_direct:
+                    direct = np.load(os.path.join(path_dir, file_imap), allow_pickle=True)
+                else:
+                    direct = None
                 
 
                 # assert(mmap.shape == imap.shape)
@@ -143,15 +160,21 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
                 batch_res.append(res)
                 batch_imap.append(imap)
                 batch_mmap.append(mmap)
-                batch_amb.append(ambient)
-                batch_dir.append(direct)
+
+                if use_ambient:
+                    batch_amb.append(ambient)
+                if use_direct:
+                    batch_dir.append(direct)
 
             # convert to npy arrays
             batch_res = np.array(batch_res)
             batch_imap = np.array(batch_imap)
             batch_mmap = np.array(batch_mmap)
-            batch_amb = np.array(batch_amb)
-            batch_dir = np.array(batch_dir)
+
+            if use_ambient:
+                batch_amb = np.array(batch_amb)
+            if use_direct:
+                batch_dir = np.array(batch_dir)
 
             inputs = []
             gtruth = []
