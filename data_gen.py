@@ -78,7 +78,8 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
 
                 # cutoff between 0 and 1
                 # because image values can only be between 0 and 1
-                # but real-world data can be larger
+                # result must be between 0 and 1 
+                # but imaps can be between 0 and 2
                 res = np.clip(res, 0., 1.)
 
                 # if using logspace, convert to 16 bit ints, add offset, then take log
