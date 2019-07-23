@@ -72,11 +72,14 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
 
     # check that each element in input images is valid
-    input_to_network = input_to_network.split(",")
+    inputs_to_network = inputs_to_network.split(",")
     ground_truth = ground_truth.split(",")
 
+    print("input types are", inputs_to_network)
+    print("ground truth types are", ground_truth)
+
     valid_images = ['ambient', 'direct', 'imap', 'mmap', 'result']
-    for i in input_to_network:
+    for i in inputs_to_network:
         if i not in valid_images:
             raise Exception(f"{i} is not a valid type for input to network")
     for i in ground_truth:
@@ -132,8 +135,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     else:
         # Fit the model
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, input_to_network, ground_truth),
-            validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, input_images, ground_truth),
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth),
+            validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, inputs_to_network, ground_truth),
             validation_len_data = VALID_VALIDATION_LEN_DATA,
             callbacks=callbacks_list)
         # save the history object to a pickle file
