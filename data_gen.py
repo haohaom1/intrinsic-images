@@ -9,6 +9,42 @@ import cv2
 # NOTE: zip takes care of the nondivisible issue, anything that is extra 
 # from either list is truncated off 
 
+# Preprocesses an image to be ready to fit into the network
+# takes in images (.npy) that are 512 * 512
+# currently only
+def preprocess(ambient, direct, imap, mmap, log, resolution):
+    assert(mmap.shape == imap.shape)
+
+    # resize by rescaling
+    imap = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
+    mmap = cv2.resize(mmap, (resolution, resolution), interpolation=cv2.INTER_AREA)
+    ambient = cv2.resize(ambient, (resolution, resolution), interpolation=cv2.INTER_AREA)
+    direct = cv2.resize(direct, (resolution, resolution), interpolation=cv2.INTER_AREA)
+
+    res = np.multiply(mmap, imap)  # element wise multiplication
+
+    # cutoff between 0 and 1
+    # because image values can only be between 0 and 1
+    # result must be between 0 and 1 
+    # but imaps can be between 0 and 2
+    res = np.clip(res, 0., 1.)
+
+    # if using logspace, convert to 16 bit ints, add offset, then take log
+    if log:
+        offset = 5
+        res = res * 65535 + offset
+
+        res = np.log(res)
+
+    # # if using linear space, scale all values between [-0.5, 0.5]
+    # else:
+    #     res -= 0.5
+
+    assert(res.shape == imap.shape)
+
+    return ambient, direct, imap, mmap, res
+
+
 
 def generator(imap_files, mmap_files, path_mmap, path_imap,  
               inputs_to_network=None, ground_truth=None,
@@ -73,40 +109,42 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
                 direct = np.load(os.path.join(path_dir, file_imap), allow_pickle=True)
                 
 
-                assert(mmap.shape == imap.shape)
-                res = np.multiply(mmap, imap)  # element wise multiplication
+                # assert(mmap.shape == imap.shape)
+                # res = np.multiply(mmap, imap)  # element wise multiplication
 
-                # cutoff between 0 and 1
-                # because image values can only be between 0 and 1
-                # result must be between 0 and 1 
-                # but imaps can be between 0 and 2
-                res = np.clip(res, 0., 1.)
+                # # cutoff between 0 and 1
+                # # because image values can only be between 0 and 1
+                # # result must be between 0 and 1 
+                # # but imaps can be between 0 and 2
+                # res = np.clip(res, 0., 1.)
 
-                # if using logspace, convert to 16 bit ints, add offset, then take log
-                if log:
-                    offset = 5
-                    res = res * 65535 + offset
+                # # if using logspace, convert to 16 bit ints, add offset, then take log
+                # if log:
+                #     offset = 5
+                #     res = res * 65535 + offset
 
-                    res = np.log(res)
+                #     res = np.log(res)
 
-                # # if using linear space, scale all values between [-0.5, 0.5]
-                # else:
-                #     res -= 0.5
+                # # # if using linear space, scale all values between [-0.5, 0.5]
+                # # else:
+                # #     res -= 0.5
 
-                assert(res.shape == imap.shape)
+                # assert(res.shape == imap.shape)
 
-                # resize by rescaling
-                res_cropped = cv2.resize(res, (resolution, resolution), interpolation=cv2.INTER_AREA)
-                imap_cropped = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
-                mmap_cropped = cv2.resize(mmap, (resolution, resolution), interpolation=cv2.INTER_AREA)
-                ambient_cropped = cv2.resize(ambient, (resolution, resolution), interpolation=cv2.INTER_AREA)
-                direct_cropped = cv2.resize(direct, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                # # resize by rescaling
+                # res_cropped = cv2.resize(res, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                # imap_cropped = cv2.resize(imap, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                # mmap_cropped = cv2.resize(mmap, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                # ambient_cropped = cv2.resize(ambient, (resolution, resolution), interpolation=cv2.INTER_AREA)
+                # direct_cropped = cv2.resize(direct, (resolution, resolution), interpolation=cv2.INTER_AREA)
 
-                batch_res.append(res_cropped)
-                batch_imap.append(imap_cropped)
-                batch_mmap.append(mmap_cropped)
-                batch_amb.append(ambient_cropped)
-                batch_dir.append(direct_cropped)
+                ambient, direct, imap, mmap, res = preprocess(ambient, direct, imap, mmap, log, resolution)
+
+                batch_res.append(res)
+                batch_imap.append(imap)
+                batch_mmap.append(mmap)
+                batch_amb.append(ambient)
+                batch_dir.append(direct)
 
             # convert to npy arrays
             batch_res = np.array(batch_res)
