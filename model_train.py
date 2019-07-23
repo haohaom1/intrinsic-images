@@ -67,8 +67,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     imap_files = [x for x in os.listdir(path_imap) if x.endswith('npy')]
     mmap_files = [x for x in os.listdir(path_mmap) if x.endswith('npy')]
 
-    mmap_files = mmap_files * num_imaps_per_mmap
-
+    mmap_files = mmap_files * num_imaps_per_mmap 
     LEN_DATA = min(len(imap_files), len(mmap_files))
 
     if no_validation:
