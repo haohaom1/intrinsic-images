@@ -29,7 +29,7 @@ from models.supermodel import SuperModel
 class UNet(SuperModel):
 
 
-    def imap_only_loss(self, true_img, pred_img):
+    def custom_loss(self, true_img, pred_img):
         return K.mean(K.square(true_img * 0.5 - pred_img))
 
     def __init__(self, input_size=(128, 128, 3)):
@@ -91,7 +91,7 @@ class UNet(SuperModel):
         self.model = Model(inputs=[input_img], outputs=[output_img])
 
         # compile the model with a loss function
-        self.model.compile(optimizer='adam', loss=self.imap_only_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
 
     def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
         '''

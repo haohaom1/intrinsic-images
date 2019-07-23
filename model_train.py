@@ -17,6 +17,7 @@ import random
 from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
+from models.janknet2head.janknet2head import JankNet2Head
 
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False):
 
@@ -37,6 +38,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = UNet()
     elif model_name == 'simpleJanknet':
         net = SimpleJankNet()
+    elif model_name == 'janknet2head':
+        net = JankNet2Head()
     else:
         print(f"model name {model_name} not found")
         exit(-1)
