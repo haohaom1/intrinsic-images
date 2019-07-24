@@ -9,10 +9,10 @@ def main(argv):
     if not os.path.isdir(basepath):
         print(f"{basepath} not a valid directory")
         exit(-1)
-    os.system("python3 makecolor.py stripe 2000 test 512 512")
-    os.system("python3 makecolor.py perlin 2000 test 512 512")
-    os.system("python3 makecolor.py fractal 2000 test 512 512")
-    os.system("python3 makecolor.py random 2000 test 512 512")
+    os.system(f"python3 makecolor.py stripe 2000 test 512 512 {basepath}")
+    os.system(f"python3 makecolor.py perlin 2000 test 512 512 {basepath}")
+    os.system(f"python3 makecolor.py fractal 2000 test 512 512 {basepath}")
+    os.system(f"python3 makecolor.py random 2000 test 512 512 {basepath}")
 
 if __name__ == "__main__":
     main(sys.argv)
