@@ -4,8 +4,9 @@ import os
 import random
 
 directory = '/media/yma21/milton/intrinsic-images/data/imap/imap_npy/train'
-files = os.listdir(directory)[:100]
+files = os.listdir(directory)
 random.shuffle(files)
+files = files[:100]
 
 imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files if x.endswith('.npy')]
 
@@ -15,4 +16,5 @@ for i, (im, ax, f) in enumerate(zip(imgs, axes.flatten(), files)):
     ax.set_title(f)
     ax.imshow(im)
 
+plt.tight_layout()
 plt.show()
