@@ -12,6 +12,8 @@ import matplotlib.gridspec as gridspec
 import sys
 import json
 
+# import every type of model
+# hardcoded
 from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
@@ -61,7 +63,7 @@ def main(argv):
 
     NUM_ITEMS = 5
 
-    if len(argv) == 4:
+    if len(argv) == 6:
         history = None
     else:
         history_path = argv[5]
