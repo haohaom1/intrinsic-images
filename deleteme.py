@@ -8,6 +8,6 @@ files = random.shuffle(os.listdir(directory))[:100]
 
 imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files if x.endswith('.npy')]
 
-fig, axes = plt.subplots(10, 10, figsize=(8,8))
+fig, axes = plt.subplots(10, 10, figsize=(10,10))
 for im, ax in zip(imgs, axes.flatten()):
     ax.imshow(im)
