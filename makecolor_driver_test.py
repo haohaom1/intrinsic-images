@@ -1,12 +1,10 @@
 import os
-
-
-
-import os
+import sys
 
 def main(argv):
     if len(argv) < 1:
         print("usage: specify a basepath. It should be the parent folder of the data directory")
+        exit(-1)
     basepath = argv[1]
     if not os.path.isdir(basepath):
         print(f"{basepath} not a valid directory")
