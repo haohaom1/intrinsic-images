@@ -12,11 +12,11 @@ def main(argv):
 
     directory = argv[1]
 
-    files = os.listdir(directory)
+    files = [x for x in os.listdir(directory) if ( x.endswith('.npy') and not x.startswith("IMG") )]
     random.shuffle(files)
     files = files[:100]
 
-    imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files if ( x.endswith('.npy') and not x.startswith("IMG") )]
+    imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files]
 
     fig, axes = plt.subplots(10, 10, figsize=(10,10))
     for i, (im, ax, f) in enumerate(zip(imgs, axes.flatten(), files)):
