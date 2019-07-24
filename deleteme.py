@@ -14,3 +14,5 @@ for i, (im, ax, f) in enumerate(zip(imgs, axes.flatten(), files)):
     print(f, i)
     ax.set_title(f)
     ax.imshow(im)
+
+plt.show()
