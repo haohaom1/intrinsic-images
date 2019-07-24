@@ -3,8 +3,9 @@ import numpy as np
 import os
 import random
 
-directory = '/media/milton/intrinsic-images/data/imap/imap_npy/train'
-files = random.shuffle(os.listdir(directory))[:100]
+directory = '/media/yma21/milton/intrinsic-images/data/imap/imap_npy/train'
+files = os.listdir(directory)[:100]
+random.shuffle(files)
 
 imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files if x.endswith('.npy')]
 
