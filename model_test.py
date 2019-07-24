@@ -19,7 +19,6 @@ from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
 
-
 def main(argv):
     '''
         angle brackets denote required arguments
@@ -27,10 +26,10 @@ def main(argv):
         as is the UNIX convention :)
     '''
     if len(argv) < 5:
-        print('<model_path> <path_imap> <path_mmap> <model_name> [history_path]')
+        print('<model_name> <model_path> <path_imap> <path_mmap> [history_path]')
         return
 
-    model_name = argv[4]
+    model_name = argv[1]
 
     if model_name == "janknet":
         net = JankNet()
@@ -43,13 +42,15 @@ def main(argv):
     else:
         print(f"model name {model_name} not found")
         exit(-1)
-    
+        
+    # sets the custom loss
+    custom_loss = net.custom_loss
 
-    model_path = argv[1]
-    model = keras.models.load_model(model_path, custom_objects={'custom_loss': net.custom_loss})
+    model_path = argv[2]
+    model = keras.models.load_model(model_path, custom_objects={'custom_loss': custom_loss})
 
-    path_imap = argv[2]
-    path_mmap = argv[3]
+    path_imap = argv[3]
+    path_mmap = argv[4]
 
     imap_list = [x for x in os.listdir(path_imap) if x.endswith('.npy')]
     mmap_list = [x for x in os.listdir(path_mmap) if x.endswith('.npy')]
@@ -78,10 +79,10 @@ def main(argv):
         mmap = cv2.resize(mmap, (128, 128), interpolation=cv2.INTER_AREA)
         
         res = np.clip(imap * mmap, 0, 1)[np.newaxis, :]
-        predImap = model.predict(res)
+        predImap, predMmap = model.predict(res)
 
         # pred mmap should be result divded by twice the predicted imap
-        predMmap = res / (predImap * 2)
+        # predMmap = res / (predImap * 2)
         
         labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
 
