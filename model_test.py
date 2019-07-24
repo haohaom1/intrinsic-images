@@ -12,8 +12,10 @@ import matplotlib.gridspec as gridspec
 import sys
 import json
 
-def imap_only_loss(true_img, pred_img):
-    return K.mean(K.square(0.5 * true_img - pred_img))
+from models.janknet.janknet_separation import JankNet
+from models.unet.unet_separation import UNet
+from models.simpleJanknet.simple_janknet import SimpleJankNet
+from models.janknet2head.janknet2head import JankNet2Head
 
 def main(argv):
     '''
@@ -21,15 +23,32 @@ def main(argv):
         square brackets denote optional arguments
         as is the UNIX convention :)
     '''
-    if len(argv) < 4:
-        print('<model_path> <path_imap> <path_mmap> [history_path]')
+    if len(argv) < 5:
+        print('<model_name> <model_path> <path_imap> <path_mmap> [history_path]')
         return
 
-    model_path = argv[1]
-    model = keras.models.load_model(model_path, custom_objects={'imap_only_loss': imap_only_loss})
+    model_name = argv[1]
 
-    path_imap = argv[2]
-    path_mmap = argv[3]
+    if model_name == "janknet":
+        net = JankNet()
+    elif model_name == 'unet':
+        net = UNet()
+    elif model_name == 'simpleJanknet':
+        net = SimpleJankNet()
+    elif model_name == 'janknet2head':
+        net = JankNet2Head()
+    else:
+        print(f"model name {model_name} not found")
+        exit(-1)
+        
+    # sets the custom loss
+    custom_loss = net.custom_loss
+
+    model_path = argv[2]
+    model = keras.models.load_model(model_path, custom_objects={'custom_loss': custom_loss})
+
+    path_imap = argv[3]
+    path_mmap = argv[4]
 
     imap_list = [x for x in os.listdir(path_imap) if x.endswith('.npy')]
     mmap_list = [x for x in os.listdir(path_mmap) if x.endswith('.npy')]
@@ -45,7 +64,7 @@ def main(argv):
     if len(argv) == 4:
         history = None
     else:
-        history_path = argv[4]
+        history_path = argv[5]
         history = json.load(open(history_path, "r"))
 
     plt.figure()
@@ -58,10 +77,10 @@ def main(argv):
         mmap = cv2.resize(mmap, (128, 128), interpolation=cv2.INTER_AREA)
         
         res = np.clip(imap * mmap, 0, 1)[np.newaxis, :]
-        predImap = model.predict(res)
+        predImap, predMmap = model.predict(res)
 
         # pred mmap should be result divded by twice the predicted imap
-        predMmap = res / (predImap * 2)
+        # predMmap = res / (predImap * 2)
         
         labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
 
