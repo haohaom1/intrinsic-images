@@ -18,7 +18,10 @@ def main(argv):
 
     random.shuffle(files)
 
-    imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files]
+    imgs = []
+    for x in files:
+        print('file', x)
+        imgs.append(np.load(os.path.join(directory, x), allow_pickle=True))
 
     for img, f in zip(imgs, files):
         print('checking', f)
