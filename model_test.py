@@ -12,8 +12,13 @@ import matplotlib.gridspec as gridspec
 import sys
 import json
 
-def imap_only_loss(true_img, pred_img):
-    return K.mean(K.square(0.5 * true_img - pred_img))
+# import every type of model
+# hardcoded
+from models.janknet.janknet_separation import JankNet
+from models.unet.unet_separation import UNet
+from models.simpleJanknet.simple_janknet import SimpleJankNet
+from models.janknet2head.janknet2head import JankNet2Head
+
 
 def main(argv):
     '''
@@ -21,12 +26,27 @@ def main(argv):
         square brackets denote optional arguments
         as is the UNIX convention :)
     '''
-    if len(argv) < 4:
-        print('<model_path> <path_imap> <path_mmap> [history_path]')
+    if len(argv) < 5:
+        print('<model_path> <path_imap> <path_mmap> <model_name> [history_path]')
         return
 
+    model_name = argv[4]
+
+    if model_name == "janknet":
+        net = JankNet()
+    elif model_name == 'unet':
+        net = UNet()
+    elif model_name == 'simpleJanknet':
+        net = SimpleJankNet()
+    elif model_name == 'janknet2head':
+        net = JankNet2Head()
+    else:
+        print(f"model name {model_name} not found")
+        exit(-1)
+    
+
     model_path = argv[1]
-    model = keras.models.load_model(model_path, custom_objects={'imap_only_loss': imap_only_loss})
+    model = keras.models.load_model(model_path, custom_objects={'custom_loss': net.custom_loss})
 
     path_imap = argv[2]
     path_mmap = argv[3]
@@ -42,10 +62,10 @@ def main(argv):
 
     NUM_ITEMS = 5
 
-    if len(argv) == 4:
+    if len(argv) == 6:
         history = None
     else:
-        history_path = argv[4]
+        history_path = argv[5]
         history = json.load(open(history_path, "r"))
 
     plt.figure()
