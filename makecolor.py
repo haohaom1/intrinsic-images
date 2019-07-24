@@ -28,7 +28,7 @@ from imapUtil import fractal, stripes
 
 def main(argv):
     if len(argv) < 2:
-        print('[type of map] [number] [train/test] [width] [height]')
+        print('[type of map] [number] [train/test] [width] [height] [basepath]')
         return 
 
     if len(argv) > 5:
@@ -36,21 +36,16 @@ def main(argv):
         dir_name = argv[3]
         width = int(argv[4])
         height = int(argv[5])
+        basepath = argv[6]
     else: 
         # default values
         NUM_MAPS = 1200
         dir_name = 'train'
         width = 512
         height = 512
+        basepath = "."
 
     print(f'{dir_name}: generating {NUM_MAPS} {argv[1]} maps {height} by {width}')
-
-    # # make sure the saving directories exist
-    # paths = ['./data', './data/imap_npy', './data/imap_npy/final', 
-    #         './data/imap_npy/ambient', './data/imap_npy/direct']
-    # for p in paths: 
-    #     if not os.path.isdir(p):
-    #         os.mkdir(p)
 
     for i in range(NUM_MAPS):
         # image = None
@@ -81,30 +76,20 @@ def main(argv):
         
         amb, direct, image = cvt.addIlluminationColor(image)
 
-        # image = cvt.normalizeImage(image)
-        # amb =  amb.astype(np.uint8)
-        # direct = cvt.normalizeImage(direct)
-        # print(image)
-        # plt.imshow(image, cmap='Greys')
-        # plt.show()
-
-        # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i), image)
-        # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_amb', amb)
-        # imageio.imwrite('./test/' + argv[1] + '_{0:05d}.png'.format(i) + '_dir', direct)
-        # image = image.astype(np.float32) / 255.
-        # amb = amb.astype(np.float32) / 255.
-        # direct = direct.astype(np.float32) / 255.
-
         # convert to float32
         image = image.astype(np.float32)
         amb = amb.astype(np.float32)
         direct = direct.astype(np.float32)
 
-        np.save(f'./data/imap/imap_npy/{dir_name}/{gen_type}{i}', image)
-        np.save(f'./data/imap/imap_npy_ambient/{dir_name}/{gen_type}{i}', amb)
-        np.save(f'./data/imap/imap_npy_direct/{dir_name}/{gen_type}{i}', direct)
+        image_path = os.path.join(basepath, f"data/imap/imap_npy/{dir_name}/{gen_type}{i}")
+        ambient_path = os.path.join(basepath, f"data/imap/imap_npy_ambient/{dir_name}/{gen_type}{i}")
+        direct_path = os.path.join(basepath, f"data/imap/imap_npy_direct/{dir_name}/{gen_type}{i}")
 
-        print('saved', gen_type, i)
+        np.save(image_path, image)
+        np.save(ambient_path, amb)
+        np.save(direct_path, direct)
+
+        print(f'saved {gen_type}{i} into {image_path} (and amb, direct)')
 
 if __name__ == "__main__":
     main(sys.argv)
