@@ -16,5 +16,5 @@ for i, (im, ax, f) in enumerate(zip(imgs, axes.flatten(), files)):
     ax.set_title(f)
     ax.imshow(im)
 
-plt.tight_layout()
+# plt.tight_layout()
 plt.show()
