@@ -20,7 +20,8 @@ def main(argv):
 
     imgs = [np.load(os.path.join(directory, x), allow_pickle=True) for x in files]
 
-    for img in imgs:
+    for img, f in zip(imgs, files):
+        print('checking', f)
         assert img.shape == (512, 512, 3)
     
     imgs = imgs[:100]
