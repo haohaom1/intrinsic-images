@@ -93,7 +93,12 @@ def main(argv):
         # predImap is half of the inputed imap
         to_plot = [imap/2., mmap, res, predImap, predMmap]
         
-        for ax, l, p in zip(axRow, labels, to_plot): 
+        for ax, l, p in zip(axRow, labels, to_plot):
+
+            # print('shape', p.shape)
+            # print('to_plot', p)
+            # np.save(f'{l}_{i}.npy', p)
+
             ax.imshow(p.squeeze())
             ax.set_title(l)
             plt.axis('off')
