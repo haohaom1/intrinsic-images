@@ -28,6 +28,9 @@ from models.supermodel import SuperModel
 
 class UNet(SuperModel):
 
+    '''
+        Unet model
+    '''
 
     def custom_loss(self, true_img, pred_img):
         return K.mean(K.square(true_img * 0.5 - pred_img))
@@ -92,10 +95,3 @@ class UNet(SuperModel):
 
         # compile the model with a loss function
         self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
-
-#     def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
-#         '''
-#             call this to train the network
-#             gen - a generator function to pass into model.fit_generator()
-#         '''
-#         return self.model.fit_generator(gen, steps_per_epoch= len_data / batch_size, epochs=num_epochs, verbose=1, callbacks=callbacks_list)

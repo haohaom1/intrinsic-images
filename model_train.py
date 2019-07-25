@@ -32,6 +32,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         print(f"ratio: num imaps {num_imaps_per_mmap} must be greater than 0")
         exit(-1)
 
+    # determines model name
     if model_name == "janknet":
         net = JankNet()
     elif model_name == 'unet':
@@ -56,9 +57,14 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     filepath = f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}" + ".hdf5"
 
     full_filepath = os.path.join(new_dir, filepath)
-    # save the minimum loss
+    # this checkpoint only saves losses that have improved
     checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-    callbacks_list = [checkpoint]
+    
+
+    # add a csv logger file that tracks metrics as training progresses
+    csvlogger = CSVLogger(os.path.join(new_dir, f"rolling_log-{model_name}-{curtime}.csv"))
+
+    callbacks_list = [checkpoint, csvlogger]
 
     # pass in the names of files beforehand
     # assert that the path exists
@@ -69,7 +75,6 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     mmap_files = mmap_files * num_imaps_per_mmap 
     LEN_DATA = min(len(imap_files), len(mmap_files))
-
 
     # check that each element in input images is valid
     inputs_to_network = inputs_to_network.split(",")
@@ -126,6 +131,9 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     assert(len(imap_files_validation) == VALID_VALIDATION_LEN_DATA)
     assert(len(imap_files_train) == VALID_LEN_DATA)
 
+    # write data to a global file called "training_log.csv"
+
+
     if no_validation:
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
@@ -155,14 +163,14 @@ if __name__ == "__main__":
     parser.add_argument('path_imap', help='directory where the imap npy files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('path_mmap', help='directory where the imap files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('batch_size', help='calculate ambient and direct store imap', default=64, type=int)
-    parser.add_argument('num_epochs', help='number of epochs to train - irrelevant if in test mode', default=20, type=int)
+    parser.add_argument('num_epochs', help='number of epochs to train', default=20, type=int)
     parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int, default=5)
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
-    parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 perc. is used as validation', type=float, default=0.2)
+    parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 percent of data is set aside as validation data. is used as validation: default is use validation and 0.2', type=float, default=0.2)
     parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', action="store_true")
-    parser.add_argument('--inputs_to_network', '-i', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
-    parser.add_argument('--ground_truth', '-g', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--inputs_to_network', '-i', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
 
     args = parser.parse_args()
     args = vars(args)
