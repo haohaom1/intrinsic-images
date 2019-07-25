@@ -13,11 +13,18 @@ import data_gen
 import argparse
 import random
 
+# dependency for writing csvs
+# may consider just using csv package
+import csv
+
 # hardcoded
 from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
+
+# hardcoded training log file
+TRAINING_LOG_PATH = "./models/training_log.csv"
 
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth=""):
 
@@ -132,8 +139,20 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     assert(len(imap_files_train) == VALID_LEN_DATA)
 
     # write data to a global file called "training_log.csv"
-
-
+    with open(TRAINING_LOG_PATH, "w", newline="") as f:
+        writer = csv.writer(f, delimiter=",")
+        # instance_path, timestamp, model_name, batch_size, num_epochs, num_imaps_per_mmap, validation, 
+        # inputs, ground_truth, weights_file_path, history_path, csv_filepath, finished_training
+        inputs_str = " ".join([x for x in inputs_to_network])
+        ground_truths_str = " ".join([x for x in ground_truth])
+        print('writing paths and hyperparameters to training_log.csv')
+        print([f"{model_name}/instance_{curtime}", curtime, model_name, str(batch_size), str(num_epochs), str(num_imaps_per_mmap), str(not no_validation),
+            inputs_str, ground_truth, f"final_epoch_weights_{curtime}.hdf5", f"hist_path_{curtime}", f"rolling_log-{model_name}-{curtime}.csv", "False"])
+        writer.writerow(
+            [f"{model_name}/instance_{curtime}", curtime, model_name, str(batch_size), str(num_epochs), str(num_imaps_per_mmap), str(not no_validation),
+            inputs_str, ground_truth, f"final_epoch_weights_{curtime}.hdf5", f"hist_path_{curtime}", f"rolling_log-{model_name}-{curtime}.csv", "False"]
+        )
+    
     if no_validation:
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
@@ -155,6 +174,21 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     final_epoch_fpath = os.path.join(new_dir, f"final_epoch_weights_{curtime}.hdf5")
     print(f"saving model to {final_epoch_fpath}")
     net.model.save(final_epoch_fpath)
+
+    print("adjusting finished status in training_log.csv to true")
+    # adjust the training status in csv
+    with open(TRAINING_LOG_PATH, "w", newline="") as f:
+        lines_first = list([l[0] for l in f])
+        # find the index of the correct instance
+        idx = lines_first.index(f"{model_name}/instance_{curtime}")
+
+        # set finished to true
+        new_lines = list(f)
+        new_lines[idx][-1] = "True"
+
+        writer = csv.writer(f, delimiter=",")
+        writer.writerows(new_lines)
+
 
 
 if __name__ == "__main__":
