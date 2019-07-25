@@ -8,7 +8,7 @@ import sys
 import os
 import json, datetime
 import keras
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, CSVLogger
 import data_gen
 import argparse
 import random
