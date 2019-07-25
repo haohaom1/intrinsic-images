@@ -14,20 +14,20 @@ def main(argv):
 
     files = [x for x in os.listdir(directory) if ( x.endswith('.npy') and not x.startswith("IMG") )]
 
-    # check if each npy array is of the correct size
-
     random.shuffle(files)
 
-    imgs = []
-    for x in files:
-        print('file', x)
-        imgs.append(np.load(os.path.join(directory, x), allow_pickle=True))
+    # check if each npy array is of the correct size
 
-    for img, f in zip(imgs, files):
-        print('checking', f)
+    idx = 0
+    imgs = []
+    for fname in files:
+        print('checking', fname)
+        img = np.load(os.path.join(directory, fname))
         assert img.shape == (512, 512, 3)
-    
-    imgs = imgs[:100]
+
+        if idx < 100:
+            imgs.append(img)
+            idx += 1
 
     fig, axes = plt.subplots(10, 10, figsize=(10,10))
     for i, (im, ax, f) in enumerate(zip(imgs, axes.flatten(), files)):
