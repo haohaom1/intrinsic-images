@@ -11,6 +11,12 @@ import cv2
 
 def hsv2rgb(h, s, v):
 
+    '''
+    h: [0, 1]
+    s: [0, 1]
+    v: [0, 1]
+    '''
+
     h = np.mod(h, 1.0)
     s = np.mod(s, 1.0)
     v = np.mod(v, 1.0)
@@ -48,13 +54,13 @@ def addIlluminationColor(image,
     #     print('normalizing')
     #     image = image / 255.
 
-    hue_amb = 2 * np.pi * np.random.rand() * np.ones(image.shape)
+    hue_amb = np.random.rand() * np.ones(image.shape)
     # sat_amb = min(np.abs(np.random.rand()) * ambient_std_saturation, 1) * np.ones(image.shape)
     sat_amb = np.clip(np.ones(image.shape) * np.abs(np.random.rand()) * ambient_std_intensity, a_min=None, a_max=1)
     val_amb = max(np.abs(np.random.rand() * ambient_std_intensity + ambient_mean_intensity), ambient_lower_bound_intensity) * np.ones(image.shape)
     val_amb = np.clip(np.abs(np.random.rand()) * ambient_std_intensity + ambient_mean_intensity * np.ones(image.shape), a_min=ambient_lower_bound_intensity, a_max=None)
 
-    hue_dir = 2 * np.pi * np.random.rand() * np.ones(image.shape)
+    hue_dir = np.random.rand() * np.ones(image.shape)
     sat_dir = min(np.abs(np.random.rand()) * direct_std_saturation, 1) * np.ones(image.shape)
     # val_dir = np.abs(image * direct_std_intensity + direct_mean_intensity)
     # val_dir = np.maximum(np.minimum(1., val_dir), direct_lower_bound_intensity) # bounds in [lowerbound, 1]
