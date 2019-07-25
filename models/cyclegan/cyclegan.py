@@ -14,9 +14,9 @@ from keras.models import load_model
 from keras.models import Sequential
 from keras.utils import plot_model
 
-from models.supermodel import SuperModel
+# from models.supermodel import SuperModel
 
-class CycleGAN(SuperModel):
+class CycleGAN():
 
     def __init__(self, input_size=(128, 128, 3)):
 
@@ -45,54 +45,52 @@ class CycleGAN(SuperModel):
         illumination_2_prime = self.decoder(encoded_2_prime, name='illumination_2_p')
 
         self.model = Model([input_img_1, input_img_2], [reflectance_1_prime, illumination_1_prime, reflectance_2_prime, illumination_2_prime])
-        self.model.compile(optimizer='adam', loss=self.custom_loss(self.model))
+        # self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
 
-    def custom_loss(self, model):
-        def loss_func(y_true, y_pred):
 
-            # mmap1, imap2, mmap2, imap1 = tuple(y_true)
-            r1p = y_pred[0]
-            l1p = y_pred[1]
-            r2p = y_pred[2] 
-            l2p = y_pred[3]
+    def custom_loss(self, y_true, y_pred):
 
-            img1 = model.get_layer('input_1').output
-            img2 = model.get_layer('input_2').output
+        # mmap1, imap2, mmap2, imap1 = tuple(y_true)
+        r1p = y_pred[0]
+        l1p = y_pred[1]
+        r2p = y_pred[2] 
+        l2p = y_pred[3]
 
-            r1 = model.get_layer('reflectance_1').output
-            l1 = model.get_layer('illumination_1').output
-            r2 = model.get_layer('reflectance_2').output
-            l2 = model.get_layer('illumination_2').output
+        img1 = self.model.get_layer('input_1').output
+        img2 = self.model.get_layer('input_2').output
 
-            img1_pp = keras.layers.Multiply()([r1p, l2p])
-            img2_pp = keras.layers.Multiply()([r2p, l1p])
+        r1 = self.model.get_layer('reflectance_1').output
+        l1 = self.model.get_layer('illumination_1').output
+        r2 = self.model.get_layer('reflectance_2').output
+        l2 = self.model.get_layer('illumination_2').output
 
-            # reconstruction loss
-            reconstruction_loss = K.mean(K.square(img1 - img1_pp)) + K.mean(K.square(img2 - img2_pp))
+        img1_pp = keras.layers.Multiply()([r1p, l2p])
+        img2_pp = keras.layers.Multiply()([r2p, l1p])
 
-            # consistency loss
-            consistency_loss = K.mean(K.square(l1 - l2p)) + K.mean(K.square(l2 - l1p)) + \
-                                K.mean(K.square(r1 - r1p)) + K.mean(K.square(r2 - r2p))
+        # reconstruction loss
+        reconstruction_loss = K.mean(K.square(img1 - img1_pp)) + K.mean(K.square(img2 - img2_pp))
+
+        # consistency loss
+        consistency_loss = K.mean(K.square(l1 - l2p)) + K.mean(K.square(l2 - l1p)) + \
+                            K.mean(K.square(r1 - r1p)) + K.mean(K.square(r2 - r2p))
+    
+        # entropy - convert to greyscale, then find bins?
+        entropy_loss = self.getEntropy(r1) + self.getEntropy(r2)
         
-            # entropy - convert to greyscale, then find bins?
-            entropy_loss = self.getEntropy(r1) + self.getEntropy(r2)
-            
-            # sobel filter
-            l1_sobelFilter = self.getSobelFilter(l1)
-            l2_sobelFilter = self.getSobelFilter(l2)
-            
-            l1f = K.mean(K.depthwise_conv2d(l1, l1_sobelFilter))
-            l2f = K.mean(K.depthwise_conv2d(l2, l2_sobelFilter))
-            
-            smoothness_loss = l1f + l2f
-            
-            weights = K.constant([0.7, 0.1, 0.1, 0.1], dtype=tf.float32)
-            losses = K.variable([reconstruction_loss, consistency_loss, entropy_loss, smoothness_loss], dtype=tf.float32)
-            total_loss = tf.tensordot(weights, losses, axes=1)
-            
-            return total_loss
-
-        return loss_func
+        # sobel filter
+        l1_sobelFilter = self.getSobelFilter(l1)
+        l2_sobelFilter = self.getSobelFilter(l2)
+        
+        l1f = K.mean(K.depthwise_conv2d(l1, l1_sobelFilter))
+        l2f = K.mean(K.depthwise_conv2d(l2, l2_sobelFilter))
+        
+        smoothness_loss = l1f + l2f
+        
+        weights = K.constant([0.7, 0.1, 0.1, 0.1], dtype=tf.float32)
+        losses = K.variable([reconstruction_loss, consistency_loss, entropy_loss, smoothness_loss], dtype=tf.float32)
+        total_loss = tf.tensordot(weights, losses, axes=1)
+        
+        return total_loss
 
     # *********** Helper functions ****************
     # returns an encoder stack
@@ -178,3 +176,7 @@ class CycleGAN(SuperModel):
         sobelFilter = sobelFilter * input_channels
         
         return sobelFilter
+
+if __name__ == "__main__":
+    cg = CycleGAN()
+    cg.model.summary()
