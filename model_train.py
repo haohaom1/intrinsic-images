@@ -8,16 +8,23 @@ import sys
 import os
 import json, datetime
 import keras
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, CSVLogger
 import data_gen
 import argparse
 import random
+
+# dependency for writing csvs
+# may consider just using csv package
+import csv
 
 # hardcoded
 from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
+
+# hardcoded training log file
+TRAINING_LOG_PATH = "./models/training_log.csv"
 
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth=""):
 
@@ -32,6 +39,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         print(f"ratio: num imaps {num_imaps_per_mmap} must be greater than 0")
         exit(-1)
 
+    # determines model name
     if model_name == "janknet":
         net = JankNet()
     elif model_name == 'unet':
@@ -56,9 +64,14 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     filepath = f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}" + ".hdf5"
 
     full_filepath = os.path.join(new_dir, filepath)
-    # save the minimum loss
+    # this checkpoint only saves losses that have improved
     checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-    callbacks_list = [checkpoint]
+    
+
+    # add a csv logger file that tracks metrics as training progresses
+    csvlogger = CSVLogger(os.path.join(new_dir, f"rolling_log-{model_name}-{curtime}.csv"))
+
+    callbacks_list = [checkpoint, csvlogger]
 
     # pass in the names of files beforehand
     # assert that the path exists
@@ -69,7 +82,6 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     mmap_files = mmap_files * num_imaps_per_mmap 
     LEN_DATA = min(len(imap_files), len(mmap_files))
-
 
     # check that each element in input images is valid
     inputs_to_network = inputs_to_network.split(",")
@@ -126,6 +138,21 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     assert(len(imap_files_validation) == VALID_VALIDATION_LEN_DATA)
     assert(len(imap_files_train) == VALID_LEN_DATA)
 
+    # write data to a global file called "training_log.csv"
+    with open(TRAINING_LOG_PATH, "w", newline="") as f:
+        writer = csv.writer(f, delimiter=",")
+        # instance_path, timestamp, model_name, batch_size, num_epochs, num_imaps_per_mmap, validation, 
+        # inputs, ground_truth, weights_file_path, history_path, csv_filepath, finished_training
+        inputs_str = " ".join([x for x in inputs_to_network])
+        ground_truths_str = " ".join([x for x in ground_truth])
+        print('writing paths and hyperparameters to training_log.csv')
+        print([f"{model_name}/instance_{curtime}", curtime, model_name, str(batch_size), str(num_epochs), str(num_imaps_per_mmap), str(not no_validation),
+            inputs_str, ground_truth, f"final_epoch_weights_{curtime}.hdf5", f"hist_path_{curtime}", f"rolling_log-{model_name}-{curtime}.csv", "False"])
+        writer.writerow(
+            [f"{model_name}/instance_{curtime}", curtime, model_name, str(batch_size), str(num_epochs), str(num_imaps_per_mmap), str(not no_validation),
+            inputs_str, ground_truth, f"final_epoch_weights_{curtime}.hdf5", f"hist_path_{curtime}", f"rolling_log-{model_name}-{curtime}.csv", "False"]
+        )
+    
     if no_validation:
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
@@ -148,6 +175,21 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     print(f"saving model to {final_epoch_fpath}")
     net.model.save(final_epoch_fpath)
 
+    print("adjusting finished status in training_log.csv to true")
+    # adjust the training status in csv
+    with open(TRAINING_LOG_PATH, "w", newline="") as f:
+        lines_first = list([l[0] for l in f])
+        # find the index of the correct instance
+        idx = lines_first.index(f"{model_name}/instance_{curtime}")
+
+        # set finished to true
+        new_lines = list(f)
+        new_lines[idx][-1] = "True"
+
+        writer = csv.writer(f, delimiter=",")
+        writer.writerows(new_lines)
+
+
 
 if __name__ == "__main__":
 
@@ -155,14 +197,14 @@ if __name__ == "__main__":
     parser.add_argument('path_imap', help='directory where the imap npy files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('path_mmap', help='directory where the imap files are located. For train, you should specify the train folder. Likewise for test.')
     parser.add_argument('batch_size', help='calculate ambient and direct store imap', default=64, type=int)
-    parser.add_argument('num_epochs', help='number of epochs to train - irrelevant if in test mode', default=20, type=int)
+    parser.add_argument('num_epochs', help='number of epochs to train', default=20, type=int)
     parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int, default=5)
     parser.add_argument('model_name', help="the name of the model")
     parser.add_argument('--hist_path', '-p', help='name of the history object, saved in the same path as this file')
-    parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 perc. is used as validation', type=float, default=0.2)
+    parser.add_argument('--validation_split', '-s', help='ratio of train/validation split 0.2 means 20 percent of data is set aside as validation data. is used as validation: default is use validation and 0.2', type=float, default=0.2)
     parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', action="store_true")
-    parser.add_argument('--inputs_to_network', '-i', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
-    parser.add_argument('--ground_truth', '-g', help='if this optional argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--inputs_to_network', '-i', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
 
     args = parser.parse_args()
     args = vars(args)

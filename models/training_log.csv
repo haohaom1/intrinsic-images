@@ -1,0 +1,6 @@
+instance_path, timestamp, model_name, batch_size, num_epochs, num_imaps_per_mmap, validation, inputs, ground_truth, weights_file_path, history_path, csv_filepath, finished_training
+
+
+
+
+
