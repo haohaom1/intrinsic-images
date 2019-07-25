@@ -20,7 +20,7 @@ def main(argv):
 
     idx = 0
     imgs = []
-    for fname in files:
+    for fname in files[:100]:
         print('checking', fname)
         img = np.load(os.path.join(directory, fname))
         assert img.shape == (512, 512, 3)
