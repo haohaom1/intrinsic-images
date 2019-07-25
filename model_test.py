@@ -2,6 +2,8 @@
 Test file that displays the model predictions of imaps
 '''
 
+import matplotlib
+matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
 import numpy as np
 import keras
