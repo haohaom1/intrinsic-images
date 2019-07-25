@@ -30,7 +30,7 @@ from models.supermodel import SuperModel
 class JankNet2Head(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
-        input_img = Input(shape=(128,128,3))
+        input_img = Input(shape=input_size)
 
         # encoder layer
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(input_img)
@@ -56,7 +56,7 @@ class JankNet2Head(SuperModel):
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+        decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_imap')(x)
 
         # same deconv structure for the mmap
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(encoded)
@@ -68,11 +68,11 @@ class JankNet2Head(SuperModel):
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        decoded_mmap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+        decoded_mmap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_mmap')(x)
 
 
         self.model = Model(input_img, [decoded_imap, decoded_mmap])
-        self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.custom_loss)
         
         
     def custom_loss(self, true_img, pred_img):
