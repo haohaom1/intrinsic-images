@@ -178,12 +178,18 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     print("adjusting finished status in training_log.csv to true")
     # adjust the training status in csv
     with open(TRAINING_LOG_PATH, "w", newline="") as f:
-        lines_first = list([l[0] for l in f])
+
+        lines = []
+        reader = csv.reader(f, delimiter=',')
+        for r in reader:
+            lines.append(r)
+
+        lines_first = list([l[0] for l in lines])
         # find the index of the correct instance
         idx = lines_first.index(f"{model_name}/instance_{curtime}")
 
         # set finished to true
-        new_lines = list(f)
+        new_lines = lines
         new_lines[idx][-1] = "True"
 
         writer = csv.writer(f, delimiter=",")
