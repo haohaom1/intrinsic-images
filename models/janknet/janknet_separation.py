@@ -30,7 +30,7 @@ from models.supermodel import SuperModel
 class JankNet(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
-        input_img = Input(shape=(128,128,3))
+        input_img = Input(shape=input_size)
 
         # encoder layer
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(input_img)
@@ -56,11 +56,11 @@ class JankNet(SuperModel):
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same')(x)
+        decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_imap')(x)
 
 
         self.model = Model(input_img, decoded_imap)
-        self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.custom_loss)
         
         
     def custom_loss(self, true_img, pred_img):

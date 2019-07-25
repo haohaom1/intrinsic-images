@@ -91,7 +91,7 @@ class UNet(SuperModel):
         self.model = Model(inputs=[input_img], outputs=[output_img])
 
         # compile the model with a loss function
-        self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.custom_loss)
 
 #     def train(self, len_data, batch_size, num_epochs, gen, callbacks_list=[]):
 #         '''
