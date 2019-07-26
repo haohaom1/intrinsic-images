@@ -22,6 +22,7 @@ from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
+from models.mikenet.mikenet import MikeNet
 
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
@@ -48,6 +49,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = SimpleJankNet()
     elif model_name == 'janknet2head':
         net = JankNet2Head()
+    elif model_name == 'mikenet':
+        net = MikeNet()
     else:
         print(f"model name {model_name} not found")
         exit(-1)

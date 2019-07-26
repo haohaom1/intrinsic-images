@@ -3,7 +3,7 @@
 
 Very minimal architecture similar to Keras basic autoencoder 
 
-Allen Ma
+Mike Fu
 """
 
 import keras

@@ -20,6 +20,7 @@ from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
+from models.mikenet.mikenet import MikeNet
 
 def main(argv):
     '''
