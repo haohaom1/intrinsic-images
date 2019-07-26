@@ -65,7 +65,7 @@ def main(argv):
 
     NUM_ITEMS = 5
 
-    if len(argv) == 6:
+    if len(argv) == 5:
         history = None
     else:
         history_path = argv[5]
