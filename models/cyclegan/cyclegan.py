@@ -45,12 +45,10 @@ class CycleGAN():
         illumination_2_prime = self.decoder(encoded_2_prime, name='illumination_2_p')
 
         self.model = Model([input_img_1, input_img_2], [reflectance_1_prime, illumination_1_prime, reflectance_2_prime, illumination_2_prime])
-        # self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
-
+        self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
 
     def custom_loss(self, y_true, y_pred):
 
-        # mmap1, imap2, mmap2, imap1 = tuple(y_true)
         r1p = y_pred[0]
         l1p = y_pred[1]
         r2p = y_pred[2] 
@@ -86,9 +84,11 @@ class CycleGAN():
         
         smoothness_loss = l1f + l2f
         
-        weights = K.constant([0.7, 0.1, 0.1, 0.1], dtype=tf.float32)
-        losses = K.variable([reconstruction_loss, consistency_loss, entropy_loss, smoothness_loss], dtype=tf.float32)
-        total_loss = tf.tensordot(weights, losses, axes=1)
+        # weights = K.constant([0.7, 0.1, 0.1, 0.1], dtype=tf.float32)
+        # losses = K.variable([reconstruction_loss, consistency_loss, entropy_loss, smoothness_loss], dtype=tf.float32)
+        # total_loss = tf.tensordot(weights, losses, axes=1)
+
+        total_loss = 0.7 * reconstruction_loss + 0.1 * consistency_loss + 0.1 * entropy_loss + 0.1 * smoothness_loss
         
         return total_loss
 
@@ -176,7 +176,3 @@ class CycleGAN():
         sobelFilter = sobelFilter * input_channels
         
         return sobelFilter
-
-if __name__ == "__main__":
-    cg = CycleGAN()
-    cg.model.summary()
