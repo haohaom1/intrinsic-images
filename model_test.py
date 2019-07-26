@@ -95,12 +95,10 @@ def main(argv):
         
         for ax, l, p in zip(axRow, labels, to_plot):
 
-            # print('shape', p.shape)
-            # print('to_plot', p)
-            # np.save(f'{l}_{i}.npy', p)
-
+            # only label if it's first row
+            if i == 0:
+                ax.set_title(l)
             ax.imshow(p.squeeze())
-            ax.set_title(l)
             plt.axis('off')
             ax.set_xticklabels([])
             ax.set_yticklabels([])
