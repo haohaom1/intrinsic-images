@@ -1,6 +1,7 @@
 import keras
 import tensorflow as tf
 import matplotlib
+matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
 import keras.backend as K
 
@@ -45,7 +46,7 @@ class CycleGAN():
         illumination_2_prime = self.decoder(encoded_2_prime, name='illumination_2_p')
 
         self.model = Model([input_img_1, input_img_2], [reflectance_1_prime, illumination_1_prime, reflectance_2_prime, illumination_2_prime])
-        # self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
+        self.model.compile(optimizer='adam', loss=self.custom_loss, metrics=['mse'])
 
 
     def custom_loss(self, y_true, y_pred):
@@ -89,7 +90,6 @@ class CycleGAN():
         weights = K.constant([0.7, 0.1, 0.1, 0.1], dtype=tf.float32)
         losses = K.variable([reconstruction_loss, consistency_loss, entropy_loss, smoothness_loss], dtype=tf.float32)
         total_loss = tf.tensordot(weights, losses, axes=1)
-        
         return total_loss
 
     # *********** Helper functions ****************
