@@ -20,6 +20,7 @@ from models.janknet.janknet_separation import JankNet
 from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
+from models.mikenet.mikenet import MikeNet
 
 def main(argv):
     '''
@@ -65,7 +66,7 @@ def main(argv):
 
     NUM_ITEMS = 5
 
-    if len(argv) == 6:
+    if len(argv) == 5:
         history = None
     else:
         history_path = argv[5]
@@ -95,12 +96,10 @@ def main(argv):
         
         for ax, l, p in zip(axRow, labels, to_plot):
 
-            # print('shape', p.shape)
-            # print('to_plot', p)
-            # np.save(f'{l}_{i}.npy', p)
-
+            # only label if it's first row
+            if i == 0:
+                ax.set_title(l)
             ax.imshow(p.squeeze())
-            ax.set_title(l)
             plt.axis('off')
             ax.set_xticklabels([])
             ax.set_yticklabels([])
