@@ -27,7 +27,7 @@ from models.mikenet.mikenet import MikeNet
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth=""):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128):
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
@@ -40,17 +40,19 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         print(f"ratio: num imaps {num_imaps_per_mmap} must be greater than 0")
         exit(-1)
 
+    input_size = (resolution, resolution, 3)
+    print(f'input size: {input_size}')
     # determines model name
     if model_name == "janknet":
-        net = JankNet()
+        net = JankNet(input_size=input_size)
     elif model_name == 'unet':
-        net = UNet()
+        net = UNet(input_size=input_size)
     elif model_name == 'simpleJanknet':
-        net = SimpleJankNet()
+        net = SimpleJankNet(input_size=input_size)
     elif model_name == 'janknet2head':
-        net = JankNet2Head()
+        net = JankNet2Head(input_size=input_size)
     elif model_name == 'mikenet':
-        net = MikeNet()
+        net = MikeNet(input_size=input_size)
     else:
         print(f"model name {model_name} not found")
         exit(-1)
@@ -158,14 +160,14 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     
     if no_validation:
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap),
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, resolution=resolution),
             validation_gen = None,
             validation_len_data = None,
             callbacks=callbacks_list)
     else:
         # Fit the model
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth),
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, resolution=resolution),
             validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, inputs_to_network, ground_truth),
             validation_len_data = VALID_VALIDATION_LEN_DATA,
             callbacks=callbacks_list)
@@ -215,6 +217,7 @@ if __name__ == "__main__":
     parser.add_argument('--no_validation', '-nv', help='if this flag is set, then there is NO validation set. The validation_split flag is disregarded in this case', action="store_true")
     parser.add_argument('--inputs_to_network', '-i', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
     parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
 
     args = parser.parse_args()
     args = vars(args)
