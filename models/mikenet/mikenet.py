@@ -33,10 +33,10 @@ class MikeNet(SuperModel):
         input_img = Input(shape=input_size)
 
         # 1 by 1 conv layer
-        # x = Conv2D(3, (1, 1), activation='relu', padding='same')(input_img)
+        x = Conv2D(6, (1, 1), activation='relu', padding='same')(input_img)
 
         # encoder layer
-        x = Conv2D(64, (3, 3), activation='relu', padding='same')(input_img)
+        x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
         x = Conv2D(64, (3, 3), activation='relu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(128, (3, 3), activation='relu', padding='same')(x)

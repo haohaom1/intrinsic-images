@@ -92,7 +92,11 @@ def main(argv):
         # NOTE
         # imap is shown to be divided by 2 because it is between 0-2
         # predImap is half of the inputed imap
+        # shows the clip result
         to_plot = [imap/2., mmap, res, predImap, predMmap]
+
+        # apply gamma correction
+        to_plot = [gamma_correction(x) for x in to_plot]
         
         for ax, l, p in zip(axRow, labels, to_plot):
 
