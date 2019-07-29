@@ -112,7 +112,15 @@ def main(argv):
         ax.set_ylabel('loss')
         ax.legend()
 
+        
+
     plt.show()
+
+def gamma_correction(img, gamma=2.2):
+    # assumes that image is a floating point from 0 to 1
+    inv_gamma = 1.0 / gamma
+    corrected = img ** inv_gamma
+    return corrected
 
 if __name__ == "__main__":
     main(sys.argv)
