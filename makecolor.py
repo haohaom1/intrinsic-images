@@ -86,10 +86,11 @@ def main(argv):
         direct_path = os.path.join(basepath, f"data/imap/imap_npy_direct/{dir_name}/{gen_type}{i}")
 
         np.save(image_path, image)
-        np.save(ambient_path, amb)
-        np.save(direct_path, direct)
+        # np.save(ambient_path, amb)
+        # np.save(direct_path, direct)
 
-        print(f'saved {gen_type}{i} into {image_path} (and amb, direct)')
+        # print(f'saved {gen_type}{i} into {image_path} (and amb, direct)')
+        print(f'saved {gen_type}{i} into {image_path} ONLY (no amb or direct)')
 
 if __name__ == "__main__":
     main(sys.argv)
