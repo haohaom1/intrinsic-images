@@ -1,6 +1,7 @@
 import keras
 import tensorflow as tf
 import matplotlib
+matplotlib.use("tkagg")
 import matplotlib.pyplot as plt
 import keras.backend as K
 
