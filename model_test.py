@@ -21,6 +21,8 @@ from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
+from models.strongerjanknet.strongerjanknet import StrongerJankNet
+from models.brucenet.brucenet import BruceNet
 
 def main(argv):
     '''
@@ -42,6 +44,10 @@ def main(argv):
         net = SimpleJankNet()
     elif model_name == 'janknet2head':
         net = JankNet2Head()
+    elif model_name == "strongerJanknet":
+        net = StrongerJankNet()
+    elif model_name == "brucenet":
+        net = BruceNet()
     else:
         print(f"model name {model_name} not found")
         exit(-1)
