@@ -23,7 +23,7 @@ from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
-from models.strongerjanknet import StrongerJankNet
+from models.strongerjanknet.strongerjanknet import StrongerJankNet
 
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
