@@ -74,7 +74,6 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     full_filepath = os.path.join(new_dir, filepath)
     # this checkpoint only saves losses that have improved
     checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-    
 
     # add a csv logger file that tracks metrics as training progresses
     csvlogger = CSVLogger(os.path.join(new_dir, f"rolling_log-{model_name}-{curtime}.csv"))
@@ -148,7 +147,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     
     if no_validation:
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
-            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, batch_size=batch_size, resolution=resolution),
+            data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_gen = None,
             validation_len_data = None,
             callbacks=callbacks_list)
