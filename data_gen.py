@@ -172,8 +172,6 @@ def generator(imap_files, mmap_files, path_mmap, path_imap,
             
             yield inputs, gtruth
 
-            # # in the future, need to return 5, need to take account of this inside model.train()
-            # yield np.array(batch_res), np.array(batch_imap) #, np.array(batch_mmap)
 
 
             
