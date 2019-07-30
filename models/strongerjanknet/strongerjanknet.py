@@ -28,7 +28,7 @@ from models.supermodel import SuperModel
 
 # input_img = Input(shape=(128, 128, 3))  # adapt this if using `channels_first` image data format
 
-class StrongerJanknet(SuperModel):
+class StrongerJankNet(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
         input_img = Input(shape=input_size)
