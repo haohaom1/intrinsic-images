@@ -13,6 +13,7 @@ from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
+from models.testJanknet.testjank1 import TestJankNet
 
 # generate an image with n horizontal lines
 # of size m x m
@@ -122,6 +123,8 @@ def main(argv):
         net = StrongerJankNet(input_size=input_size)
     elif model_name == "brucenet":
         net = BruceNet(input_size=input_size)
+    elif model_name == "testJanknet":
+        net = TestJankNet(input_size=input_size)
     else:
         print(f"model name {model_name} not found")
         exit(-1)
