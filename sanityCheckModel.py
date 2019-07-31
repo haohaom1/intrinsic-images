@@ -127,6 +127,9 @@ def main(argv):
 
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     new_dir = f'./models/{model_name}/instance_{curtime}'
+    os.mkdir(new_dir)
+
+
     hist_path = f'{model_name}_hist'
 
     history_obj = model.fit_generator(gen, steps_per_epoch= 300, epochs=20, verbose=1)
