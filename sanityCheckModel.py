@@ -95,11 +95,15 @@ def generator():
 
 def main(argv):
 
-    if len(argv) < 2:
-        print('[name of model]')
+    if len(argv) < 3:
+        print('[name of model] [gpu num]')
         return
 
     model_name = argv[1]
+
+    # change gpu id
+    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"]=argv[2]   # should be 0 or 1
 
     input_size = (128, 128, 1)
 
