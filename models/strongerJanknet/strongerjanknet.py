@@ -51,7 +51,7 @@ class StrongerJankNet(SuperModel):
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x) # 4 x 4
         x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
-        encoded = Conv2D(256, (3, 3), activation='sigmoid', padding='same')(x)
+        encoded = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
         # ensure everything is between 0 and 1
 
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(encoded)
