@@ -90,7 +90,7 @@ def generator():
         horiz_data = np.array(horiz_data)
         vert_data = np.array(vert_data)
             
-        yield cross_data, (horiz_data, vert_data)
+        yield cross_data, [horiz_data, vert_data]
 
 
 def main(argv):
