@@ -29,11 +29,11 @@ from models.brucenet.brucenet import BruceNet
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
-# change gpu id
-os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128, gpu=0):
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128):
+    # change gpu id
+    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"]=str(gpu)   # should be 0 or 1
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
@@ -189,6 +189,7 @@ if __name__ == "__main__":
     parser.add_argument('--inputs_to_network', '-i', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
     parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
+    parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
 
     args = parser.parse_args()
     args = vars(args)
