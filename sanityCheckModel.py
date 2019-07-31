@@ -129,7 +129,7 @@ def main(argv):
     new_dir = f'./models/{model_name}/instance_{curtime}'
     hist_path = f'{model_name}_hist'
 
-    history_obj = model.fit_generator(gen, steps_per_epoch= 500, epochs=30, verbose=1)
+    history_obj = model.fit_generator(gen, steps_per_epoch= 300, epochs=20, verbose=1)
     json.dump(history_obj.history, open(os.path.join(new_dir, hist_path + "_" + curtime), "w"))
     final_epoch_fpath = os.path.join(new_dir, f"final_epoch_weights_{curtime}.hdf5")
     print(f"saving model to {final_epoch_fpath}")
