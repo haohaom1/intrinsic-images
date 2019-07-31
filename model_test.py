@@ -21,7 +21,7 @@ from models.unet.unet_separation import UNet
 from models.simpleJanknet.simple_janknet import SimpleJankNet
 from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
-from models.strongerjanknet.strongerjanknet import StrongerJankNet
+from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
 
 def main(argv):
