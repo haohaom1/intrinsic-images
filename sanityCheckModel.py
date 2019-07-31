@@ -13,7 +13,7 @@ from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
-from models.testJanknet.testjank1 import TestJankNet
+from models.testJanknet.testjank2 import TestJankNet
 
 # generate an image with n horizontal lines
 # of size m x m
