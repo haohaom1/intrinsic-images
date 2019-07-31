@@ -101,7 +101,7 @@ def main(argv):
 
     model_name = argv[1]
 
-    input_size = (128, 128, 3)
+    input_size = (128, 128, 1)
 
     # determines model name
     if model_name == "janknet":
