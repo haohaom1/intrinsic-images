@@ -48,7 +48,7 @@ class BruceNet(SuperModel):
         x = MaxPooling2D((2, 2), padding='same')(x)  # size = (8, 8)
         x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
-        encoded = Conv2D(256, (3, 3), activation='sigmoid', padding='same', name='encoded')(x)
+        encoded = Conv2D(256, (3, 3), activation='selu', padding='same', name='encoded')(x)
 
         # oversight
         x = MaxPooling2D((2,2), padding='same')(encoded)  # size = (4, 4)
