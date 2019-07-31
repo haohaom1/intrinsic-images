@@ -29,6 +29,10 @@ from models.brucenet.brucenet import BruceNet
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
+# change gpu id
+os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128):
 
     if not os.path.isdir(path_imap):
