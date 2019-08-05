@@ -33,8 +33,8 @@ TRAINING_LOG_PATH = "./models/training_log.csv"
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128, gpu=0):
 
     # change gpu id
-    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"]=str(gpu)   # should be 0 or 1
+    # os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+    # os.environ["CUDA_VISIBLE_DEVICES"]=str(gpu)   # should be 0 or 1
 
     if not os.path.isdir(path_imap):
         print(f"{path_imap} not a valid directory")
