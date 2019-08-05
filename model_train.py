@@ -25,7 +25,7 @@ from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
-from models.testJanknet.testjank3 import TestJankNet
+from models.testJanknet.testjank2 import TestJankNet
 
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
