@@ -80,32 +80,21 @@ class TestJankNet(SuperModel):
 
 
         self.model = Model(input_img, [decoded_imap, decoded_mmap])
-        self.model.compile(optimizer='adam', loss=self.custom_loss)
+        self.model.compile(optimizer='adam', loss=self.custom_loss())
 
-    def custom_loss(self, true_img, pred_img):
+    def custom_loss(self):
 
-        imap_true = true_img[0]
-        mmap_true = true_img[1]
-        imap_pred = pred_img[0]
-        mmap_pred = pred_img[1]
+        def imap_loss(true_img, pred_img):
 
-        # these are 2D tensors
-        imap_r_diff = K.square(imap_true[:, :, 0] * 0.5 - imap_pred[:, :, 0])
-        imap_g_diff = K.square(imap_true[:, :, 1] * 0.5 - imap_pred[:, :, 1])
-        imap_b_diff = K.square(imap_true[:, :, 2] * 0.5 - imap_pred[:, :, 2])
+            imap_diff = K.mean(K.square((0.5 * true_img) - pred_img))
+            return imap_diff
 
-        imap_diff = K.mean(imap_r_diff + imap_g_diff, imap_b_diff)
+        def mmap_loss(true_img, pred_img):
 
-        # these are 2D tensors
-        mmap_r_diff = K.square(mmap_true[:, :, 0] - mmap_pred[:, :, 0])
-        mmap_g_diff = K.square(mmap_true[:, :, 1] - mmap_pred[:, :, 1])
-        mmap_b_diff = K.square(mmap_true[:, :, 2] - mmap_pred[:, :, 2])
+            mmap_diff = K.mean(K.square(true_img - pred_img))
+            return mmap_diff
 
-        mmap_diff = K.mean(mmap_r_diff + mmap_g_diff, mmap_b_diff)
-
-        # imap_diff = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]))
-        # mmap_diff = K.mean(K.square(true_img[1] - pred_img[1]))
-        return 0.5 * imap_diff + 0.5 * mmap_diff
+        return [imap_loss, mmap_loss]
         
         
     # def custom_loss(self, true_img, pred_img):
