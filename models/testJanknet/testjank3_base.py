@@ -4,6 +4,11 @@
 Very minimal architecture similar to Keras basic autoencoder 
 
 Mike Fu
+
+
+NOTE Put you have changed here:
+
+
 """
 
 import keras
@@ -29,6 +34,8 @@ from models.supermodel import SuperModel
 
 class JankNet2Head(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
+
+        print('\n\n\n ***** Testing Janknet test [] **** \n\n\n')
 
         input_img = Input(shape=input_size)
 
