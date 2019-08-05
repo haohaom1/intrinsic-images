@@ -25,7 +25,7 @@ from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
-# from models.testJanknet.testjank3 import TestJankNet
+from models.testJanknet.testjank3 import TestJankNet
 
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
@@ -64,8 +64,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = StrongerJankNet(input_size=input_size)
     elif model_name == "brucenet":
         net = BruceNet(input_size=input_size)
-    # elif model_name == "testJanknet":
-    #     net = TestJankNet(input_size=input_size)
+    elif model_name == "testJanknet":
+        net = TestJankNet(input_size=input_size)
     else:
         print(f"model name {model_name} not found")
         exit(-1)
