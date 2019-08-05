@@ -33,10 +33,10 @@ from models.supermodel import SuperModel
 
 # input_img = Input(shape=(128, 128, 3))  # adapt this if using `channels_first` image data format
 
-class JankNet2Head(SuperModel):
+class TestJankNet(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
-        print('\n\n\n ***** Testing Janknet test [] **** \n\n\n')
+        print('\n\n\n ***** Testing Janknet test 3 **** \n\n\n')
 
         input_img = Input(shape=input_size)
 
