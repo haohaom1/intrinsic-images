@@ -49,7 +49,7 @@ class TestJankNet(SuperModel):
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (1, 1), activation='sigmoid', padding='same')(x)
+        x = Conv2D(32, (1, 1), activation='selu', padding='same')(x)
         encoded = MaxPooling2D((2, 2), padding='same')(x)
         # ensure everything is between 0 and 1
 
@@ -81,46 +81,71 @@ class TestJankNet(SuperModel):
 
         self.model = Model(input_img, [decoded_imap, decoded_mmap])
         self.model.compile(optimizer='adam', loss=self.custom_loss)
-        
-        
+
     def custom_loss(self, true_img, pred_img):
 
-        # imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]), axis=-1)
-        # mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]), axis=-1)
-        # MSE = 0.5 * imap_diff_mse + 0.5 * mmap_diff_mse
+        imap_true = true_img[0]
+        mmap_true = true_img[1]
+        imap_pred = pred_img[0]
+        mmap_pred = pred_img[1]
+
+        # these are 2D tensors
+        imap_r_diff = K.square(imap_true[:, :, 0] * 0.5 - imap_pred[:, :, 0])
+        imap_g_diff = K.square(imap_true[:, :, 1] * 0.5 - imap_pred[:, :, 1])
+        imap_b_diff = K.square(imap_true[:, :, 2] * 0.5 - imap_pred[:, :, 2])
+
+        imap_diff = K.mean(imap_r_diff + imap_g_diff, imap_b_diff)
+
+        # these are 2D tensors
+        mmap_r_diff = K.square(mmap_true[:, :, 0] - mmap_pred[:, :, 0])
+        mmap_g_diff = K.square(mmap_true[:, :, 1] - mmap_pred[:, :, 1])
+        mmap_b_diff = K.square(mmap_true[:, :, 2] - mmap_pred[:, :, 2])
+
+        mmap_diff = K.mean(mmap_r_diff + mmap_g_diff, mmap_b_diff)
+
+        # imap_diff = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]))
+        # mmap_diff = K.mean(K.square(true_img[1] - pred_img[1]))
+        return 0.5 * imap_diff + 0.5 * mmap_diff
         
-        imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]))
-        mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]))
-        MSE = 0.5 * imap_diff_mse + 0.5 * mmap_diff_mse
+        
+    # def custom_loss(self, true_img, pred_img):
 
-        # bruce's chromaticity code
+    #     # imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]), axis=-1)
+    #     # mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]), axis=-1)
+    #     # MSE = 0.5 * imap_diff_mse + 0.5 * mmap_diff_mse
+        
+    #     imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]))
+    #     mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]))
+    #     MSE = 0.5 * imap_diff_mse + 0.5 * mmap_diff_mse
 
-        # imap
+    #     # bruce's chromaticity code
 
-        denominator_true_imap = K.sum( true_img[0] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
-        denominator_pred_imap = K.sum( pred_img[0] + 0.001, axis=-1 )
+    #     # imap
 
-        chrom_true_r_imap = true_img[0][:,:,:,0] / denominator_true_imap
-        chrom_pred_r_imap = pred_img[0][:,:,:,0] / denominator_pred_imap
-        chrom_true_g_imap = true_img[0][:,:,:,1] / denominator_true_imap
-        chrom_pred_g_imap = pred_img[0][:,:,:,1] / denominator_pred_imap 
+    #     denominator_true_imap = K.sum( true_img[0] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
+    #     denominator_pred_imap = K.sum( pred_img[0] + 0.001, axis=-1 )
 
-        # mmap
+    #     chrom_true_r_imap = true_img[0][:,:,0] / denominator_true_imap
+    #     chrom_pred_r_imap = pred_img[0][:,:,0] / denominator_pred_imap
+    #     chrom_true_g_imap = true_img[0][:,:,1] / denominator_true_imap
+    #     chrom_pred_g_imap = pred_img[0][:,:,1] / denominator_pred_imap 
 
-        denominator_true_mmap = K.sum( true_img[1] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
-        denominator_pred_mmap = K.sum( pred_img[1] + 0.001, axis=-1 )
+    #     # mmap
 
-        chrom_true_r_mmap = true_img[1][:,:,:,0] / denominator_true_mmap
-        chrom_pred_r_mmap = pred_img[1][:,:,:,0] / denominator_pred_mmap
-        chrom_true_g_mmap = true_img[1][:,:,:,1] / denominator_true_mmap
-        chrom_pred_g_mmap = pred_img[1][:,:,:,1] / denominator_pred_mmap 
+    #     denominator_true_mmap = K.sum( true_img[1] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
+    #     denominator_pred_mmap = K.sum( pred_img[1] + 0.001, axis=-1 )
 
-        imap_diff_chr = K.square( chrom_pred_g_imap - chrom_true_g_imap) + K.square( chrom_pred_r_imap - chrom_true_r_imap ) # mean squared difference over the last axis       
-        mmap_diff_chr = K.square( chrom_pred_g_mmap - chrom_true_g_mmap) + K.square( chrom_pred_r_mmap - chrom_true_r_mmap ) # mean squared difference over the last axis       
+    #     chrom_true_r_mmap = true_img[1][:,:,0] / denominator_true_mmap
+    #     chrom_pred_r_mmap = pred_img[1][:,:,0] / denominator_pred_mmap
+    #     chrom_true_g_mmap = true_img[1][:,:,1] / denominator_true_mmap
+    #     chrom_pred_g_mmap = pred_img[1][:,:,1] / denominator_pred_mmap 
 
-        CHR = 0.5 * imap_diff_chr + 0.5 * mmap_diff_chr
+    #     imap_diff_chr = K.square( chrom_pred_g_imap - chrom_true_g_imap) + K.square( chrom_pred_r_imap - chrom_true_r_imap ) # mean squared difference over the last axis       
+    #     mmap_diff_chr = K.square( chrom_pred_g_mmap - chrom_true_g_mmap) + K.square( chrom_pred_r_mmap - chrom_true_r_mmap ) # mean squared difference over the last axis       
 
-        return 0.5 * MSE + 0.5 * CHR
+    #     CHR = 0.5 * imap_diff_chr + 0.5 * mmap_diff_chr
+
+    #     return 0.5 * MSE + 0.5 * CHR
 
     # def __str__(self):
     #     return self.model.summary()
