@@ -23,6 +23,7 @@ from models.janknet2head.janknet2head import JankNet2Head
 from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
+from models.testJanknet.testjank3 import TestJankNet
 
 def main(argv):
     '''
@@ -48,12 +49,17 @@ def main(argv):
         net = StrongerJankNet()
     elif model_name == "brucenet":
         net = BruceNet()
+    elif model_name == 'testJanknet':
+        net = TestJankNet()
     else:
         print(f"model name {model_name} not found")
         exit(-1)
         
     # sets the custom loss
     custom_loss = net.custom_loss
+
+    if model_name == 'testJanknet':
+        custom_loss = net.custom_loss()
 
     model_path = argv[2]
     model = keras.models.load_model(model_path, custom_objects={'custom_loss': custom_loss})
