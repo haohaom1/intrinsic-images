@@ -64,6 +64,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = StrongerJankNet(input_size=input_size)
     elif model_name == "brucenet":
         net = BruceNet(input_size=input_size)
+    elif model_name == "testJanknet":
+        net = TestJankNet(input_size=input_size)
     else:
         print(f"model name {model_name} not found")
         exit(-1)
