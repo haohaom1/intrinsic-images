@@ -93,30 +93,30 @@ class TestJankNet(SuperModel):
 
         # imap
 
-        denominator_true_imap = K.sum( true_img[0] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
-        denominator_pred_imap = K.sum( pred_img[0] + 0.001, axis=-1 )
+        # denominator_true_imap = K.sum( true_img[0] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
+        # denominator_pred_imap = K.sum( pred_img[0] + 0.001, axis=-1 )
 
-        chrom_true_r_imap = true_img[0][:,:,0] / denominator_true_imap
-        chrom_pred_r_imap = pred_img[0][:,:,0] / denominator_pred_imap
-        chrom_true_g_imap = true_img[0][:,:,1] / denominator_true_imap
-        chrom_pred_g_imap = pred_img[0][:,:,1] / denominator_pred_imap 
+        # chrom_true_r_imap = true_img[0][:,:,0] / denominator_true_imap
+        # chrom_pred_r_imap = pred_img[0][:,:,0] / denominator_pred_imap
+        # chrom_true_g_imap = true_img[0][:,:,1] / denominator_true_imap
+        # chrom_pred_g_imap = pred_img[0][:,:,1] / denominator_pred_imap 
 
-        # mmap
+        # # mmap
 
-        denominator_true_mmap = K.sum( true_img[1] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
-        denominator_pred_mmap = K.sum( pred_img[1] + 0.001, axis=-1 )
+        # denominator_true_mmap = K.sum( true_img[1] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
+        # denominator_pred_mmap = K.sum( pred_img[1] + 0.001, axis=-1 )
 
-        chrom_true_r_mmap = true_img[1][:,:,0] / denominator_true_mmap
-        chrom_pred_r_mmap = pred_img[1][:,:,0] / denominator_pred_mmap
-        chrom_true_g_mmap = true_img[1][:,:,1] / denominator_true_mmap
-        chrom_pred_g_mmap = pred_img[1][:,:,1] / denominator_pred_mmap 
+        # chrom_true_r_mmap = true_img[1][:,:,0] / denominator_true_mmap
+        # chrom_pred_r_mmap = pred_img[1][:,:,0] / denominator_pred_mmap
+        # chrom_true_g_mmap = true_img[1][:,:,1] / denominator_true_mmap
+        # chrom_pred_g_mmap = pred_img[1][:,:,1] / denominator_pred_mmap 
 
-        imap_diff_chr = K.square( chrom_pred_g_imap - chrom_true_g_imap) + K.square( chrom_pred_r_imap - chrom_true_r_imap ) # mean squared difference over the last axis       
-        mmap_diff_chr = K.square( chrom_pred_g_mmap - chrom_true_g_mmap) + K.square( chrom_pred_r_mmap - chrom_true_r_mmap ) # mean squared difference over the last axis       
+        # imap_diff_chr = K.square( chrom_pred_g_imap - chrom_true_g_imap) + K.square( chrom_pred_r_imap - chrom_true_r_imap ) # mean squared difference over the last axis       
+        # mmap_diff_chr = K.square( chrom_pred_g_mmap - chrom_true_g_mmap) + K.square( chrom_pred_r_mmap - chrom_true_r_mmap ) # mean squared difference over the last axis       
 
-        CHR = 0.5 * imap_diff_chr + 0.5 * mmap_diff_chr
+        # CHR = 0.5 * imap_diff_chr + 0.5 * mmap_diff_chr
 
-        return 0.5 * MSE + 0.5 * CHR
+        return 0.5 * MSE #+ 0.5 * CHR
 
     # def __str__(self):
     #     return self.model.summary()
