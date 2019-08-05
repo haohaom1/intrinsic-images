@@ -49,7 +49,7 @@ class TestJankNet(SuperModel):
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (1, 1), activation='sigmoid', padding='same')(x)
+        x = Conv2D(32, (1, 1), activation='selu', padding='same')(x)
         encoded = MaxPooling2D((2, 2), padding='same')(x)
         # ensure everything is between 0 and 1
 
@@ -96,20 +96,20 @@ class TestJankNet(SuperModel):
         denominator_true_imap = K.sum( true_img[0] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
         denominator_pred_imap = K.sum( pred_img[0] + 0.001, axis=-1 )
 
-        chrom_true_r_imap = true_img[0][:,:,:,0] / denominator_true_imap
-        chrom_pred_r_imap = pred_img[0][:,:,:,0] / denominator_pred_imap
-        chrom_true_g_imap = true_img[0][:,:,:,1] / denominator_true_imap
-        chrom_pred_g_imap = pred_img[0][:,:,:,1] / denominator_pred_imap 
+        chrom_true_r_imap = (true_img[0])[:,:,:,0] / denominator_true_imap
+        chrom_pred_r_imap = (pred_img[0])[:,:,:,0] / denominator_pred_imap
+        chrom_true_g_imap = (true_img)[0][:,:,:,1] / denominator_true_imap
+        chrom_pred_g_imap = (pred_img[0])[:,:,:,1] / denominator_pred_imap 
 
         # mmap
 
         denominator_true_mmap = K.sum( true_img[1] + 0.001, axis=-1 ) # sum over the last axis (channels), add an epsilon offset
         denominator_pred_mmap = K.sum( pred_img[1] + 0.001, axis=-1 )
 
-        chrom_true_r_mmap = true_img[1][:,:,:,0] / denominator_true_mmap
-        chrom_pred_r_mmap = pred_img[1][:,:,:,0] / denominator_pred_mmap
-        chrom_true_g_mmap = true_img[1][:,:,:,1] / denominator_true_mmap
-        chrom_pred_g_mmap = pred_img[1][:,:,:,1] / denominator_pred_mmap 
+        chrom_true_r_mmap = (true_img[1])[:,:,:,0] / denominator_true_mmap
+        chrom_pred_r_mmap = (pred_img[1])[:,:,:,0] / denominator_pred_mmap
+        chrom_true_g_mmap = (true_img[1])[:,:,:,1] / denominator_true_mmap
+        chrom_pred_g_mmap = (pred_img[1])[:,:,:,1] / denominator_pred_mmap 
 
         imap_diff_chr = K.square( chrom_pred_g_imap - chrom_true_g_imap) + K.square( chrom_pred_r_imap - chrom_true_r_imap ) # mean squared difference over the last axis       
         mmap_diff_chr = K.square( chrom_pred_g_mmap - chrom_true_g_mmap) + K.square( chrom_pred_r_mmap - chrom_true_r_mmap ) # mean squared difference over the last axis       

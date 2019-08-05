@@ -48,7 +48,7 @@ class TestJankNet(SuperModel):
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (1, 1), activation='sigmoid', padding='same')(x)
+        x = Conv2D(32, (1, 1), activation='selu', padding='same')(x)
         encoded = MaxPooling2D((2, 2), padding='same')(x)
         # ensure everything is between 0 and 1
 
