@@ -37,6 +37,8 @@ from models.supermodel import SuperModel
 class TestJankNet(SuperModel):
     def __init__(self, input_size=(128, 128, 3)):
 
+        print('\n\n\n ***** Testing Janknet test 1 **** \n\n\n')
+
         input_img = Input(shape=input_size)
 
         # encoder layer
