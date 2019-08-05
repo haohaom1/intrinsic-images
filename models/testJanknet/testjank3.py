@@ -85,8 +85,12 @@ class TestJankNet(SuperModel):
         
     def custom_loss(self, true_img, pred_img):
 
-        imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]), axis=-1)
-        mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]), axis=-1)
+        # imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]), axis=-1)
+        # mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]), axis=-1)
+        # MSE = 0.5 * imap_diff_mse + 0.5 * mmap_diff_mse
+        
+        imap_diff_mse = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]))
+        mmap_diff_mse = K.mean(K.square(true_img[1] - pred_img[1]))
         MSE = 0.5 * imap_diff_mse + 0.5 * mmap_diff_mse
 
         # bruce's chromaticity code
