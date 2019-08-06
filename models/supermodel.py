@@ -44,6 +44,9 @@ class SuperModel():
         '''
         return self.model.evaluate_generator(gen, steps=len_data / batch_size, verbose=1)
 
+    def load_weights(self, path):
+        self.model.load_weights(path)
+
     # default to SSD
     def custom_loss(self, true_img, pred_img):
        return K.mean(K.square(true_img - pred_img))
