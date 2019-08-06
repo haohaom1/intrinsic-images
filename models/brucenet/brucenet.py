@@ -115,7 +115,7 @@ class BruceNet(SuperModel):
 
 
         self.model = Model(input_img, [decoded_imap, decoded_mmap])
-        self.model.compile(optimizer='adam', loss=self.custom_loss)
+        self.model.compile(optimizer='adam', loss=self.custom_loss())
         
         
     def custom_loss(self):

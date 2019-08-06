@@ -98,4 +98,4 @@ class UNet(SuperModel):
         self.model = Model(inputs=[input_img], outputs=[output_img])
 
         # compile the model with a loss function
-        self.model.compile(optimizer='adam', loss=self.custom_loss)
+        self.model.compile(optimizer='adam', loss=self.custom_loss())
