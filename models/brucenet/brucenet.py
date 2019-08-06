@@ -36,19 +36,18 @@ class BruceNet(SuperModel):
         x = Conv2D(6, (1, 1), activation='selu', padding='same')(input_img)
 
         # encoder layer
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)  # size = (32, 32)
-        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)  # size = (16, 16)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)  # size = (8, 8)
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
-        encoded = Conv2D(256, (3, 3), activation='selu', padding='same', name='encoded')(x)
+        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
+        encoded = Conv2D(, (3, 3), activation='selu', padding='same', name='encoded')(x)
 
         # oversight
         x = MaxPooling2D((2,2), padding='same')(encoded)  # size = (4, 4)
@@ -69,48 +68,43 @@ class BruceNet(SuperModel):
         # print(concat_1.shape)  # should be 128 * 3
 
         # deconv structure for imap part 1
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(concat_1)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
-        x = UpSampling2D((2, 2))(x)
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(256, (3, 3), activation='selu', padding='same')(concat_1)
         x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         imap_2 = UpSampling2D((2, 2))(x)
 
         # same deconv structure for the mmap
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(concat_1)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
-        x = UpSampling2D((2, 2))(x)
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(256, (3, 3), activation='selu', padding='same')(concat_1)
         x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
+        x = UpSampling2D((2, 2))(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         mmap_2 = UpSampling2D((2, 2))(x)
 
         # cross communication one more time
         concat_2 = Concatenate()([imap_2, mmap_2])
 
         # last conv stack for imap
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(concat_2)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='selu', padding='same')(concat_2)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_imap')(x)
-
         # last conv stack for mmap
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(concat_2)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(16, (3, 3), activation='selu', padding='same')(concat_2)
+        x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         decoded_mmap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_mmap')(x)
 
 
