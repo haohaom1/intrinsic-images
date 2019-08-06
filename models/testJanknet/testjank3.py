@@ -64,7 +64,7 @@ class TestJankNet(SuperModel):
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_imap')(x)
+        decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='imap_loss')(x)
 
         # same deconv structure for the mmap
         x = Conv2D(32, (3, 3), activation='selu', padding='same')(encoded)
@@ -76,7 +76,7 @@ class TestJankNet(SuperModel):
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
-        decoded_mmap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_mmap')(x)
+        decoded_mmap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='mmap_loss')(x)
 
 
         self.model = Model(input_img, [decoded_imap, decoded_mmap])
