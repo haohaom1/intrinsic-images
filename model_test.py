@@ -25,6 +25,7 @@ from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
 from models.testJanknet.testjank3 import TestJankNet
 
+
 def main(argv):
     '''
         angle brackets denote required arguments
@@ -58,11 +59,11 @@ def main(argv):
     # sets the custom loss
     custom_loss = net.custom_loss
 
-    if model_name == 'testJanknet':
-        custom_loss = net.custom_loss()
+    # if model_name == 'testJanknet':
+    #     custom_loss = custom_loss()
 
     model_path = argv[2]
-    model = keras.models.load_model(model_path, custom_objects={'custom_loss': custom_loss})
+    model = keras.models.load_model(model_path, custom_objects={'imap_loss': imap_loss, 'mmap_loss':mmap_loss})
 
     path_imap = argv[3]
     path_mmap = argv[4]
@@ -131,6 +132,18 @@ def main(argv):
         
 
     plt.show()
+
+def custom_loss():
+    return [imap_loss, mmap_loss]
+
+def imap_loss(true_img, pred_img):
+
+    imap_diff = K.mean(K.square((0.5 * true_img) - pred_img))
+    return imap_diff
+    
+def mmap_loss(true_img, pred_img):
+    mmap_diff = K.mean(K.square(true_img - pred_img))
+    return mmap_diff
 
 def gamma_correction(img, gamma=2.2):
     # assumes that image is a floating point from 0 to 1
