@@ -102,7 +102,7 @@ class TestJankNet(SuperModel):
             mmap_diff = K.mean(K.square(true_img - pred_img))
             return mmap_diff
 
-        return [imap_loss, mmap_loss]
+        return {'imap_loss': imap_loss, 'mmap_loss': mmap_loss}
         
         
     # def custom_loss(self, true_img, pred_img):
