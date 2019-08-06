@@ -62,7 +62,10 @@ class JankNet(SuperModel):
         
         
     def custom_loss(self, true_img, pred_img):
-       return K.mean(K.square(0.5 * true_img - pred_img))
+        def decoded_imap():
+            return K.mean(K.square(0.5 * true_img - pred_img))
+        
+        return decoded_imap
 
         
         

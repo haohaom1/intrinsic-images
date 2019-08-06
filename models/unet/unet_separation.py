@@ -32,8 +32,12 @@ class UNet(SuperModel):
         Unet model
     '''
 
-    def custom_loss(self, true_img, pred_img):
-        return K.mean(K.square(true_img * 0.5 - pred_img))
+    def custom_loss(self):
+        # function names should match with the names of the corresponding output layers
+        def decoded_imap(true_img, pred_img):
+            return K.mean(K.square(true_img * 0.5 - pred_img))
+
+        return {'decoded_imap': decoded_imap}
 
     def __init__(self, input_size=(128, 128, 3)):
         input_img = Input(shape=input_size)
@@ -89,7 +93,7 @@ class UNet(SuperModel):
         c81 = Conv2D(16, (3, 3), activation='selu', padding='same')(c80)
 
         # conv 1 x 1 cross channel communication
-        output_img = Conv2D(3, (1, 1), activation='sigmoid')(c81)
+        output_img = Conv2D(3, (1, 1), activation='sigmoid', name='decoded_imap')(c81)
 
         self.model = Model(inputs=[input_img], outputs=[output_img])
 
