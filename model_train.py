@@ -205,7 +205,7 @@ if __name__ == "__main__":
     parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
     parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
-    parser.add_argument('--load_model', '-lm', help='optionally load in model weights')
+    parser.add_argument('--load_weights', '-lm', help='optionally load in model weights')
 
     args = parser.parse_args()
     args = vars(args)
