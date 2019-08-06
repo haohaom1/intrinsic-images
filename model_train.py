@@ -82,6 +82,11 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     # make a directory for this current instance
     new_dir = f'./models/{model_name}/instance_{curtime}'
+
+    # add additional naming convention for retraining models
+    if load_weights:
+        new_dir += f'retrained_{load_weights}'
+
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
 
