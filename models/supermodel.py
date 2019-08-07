@@ -16,6 +16,10 @@ from keras.callbacks import TensorBoard
 from keras.callbacks import ModelCheckpoint
 from keras.losses import mse
 
+from keras.utils import plot_model
+
+import os
+
 
 class SuperModel():
 
@@ -50,3 +54,14 @@ class SuperModel():
     # default to SSD
     def custom_loss(self, true_img, pred_img):
        return K.mean(K.square(true_img - pred_img))
+
+    # saves the model architecture as png
+    def save_model_architecture(self, fname, path=None):
+        if not fname.endswith('.png'):
+            fname += '.png'
+        if path:
+            fname = os.path.join(path, fname)
+
+        # save architecture if it doesn't exist already
+        if not os.path.isfile(fname): 
+            plot_model(self.model, to_file=fname)
