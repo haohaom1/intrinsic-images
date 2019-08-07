@@ -38,33 +38,33 @@ class BruceNet(SuperModel):
         # encoder layer
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(16, (3, 3), activation='selu', padding='same')(x)
+        x = MaxPooling2D((2, 2), padding='same')(x)  # size = (64, 64)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)  # size = (32, 32)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(32, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
         x = MaxPooling2D((2, 2), padding='same')(x)  # size = (16, 16)
-        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = Conv2D(64, (3, 3), activation='selu', padding='same')(x)
-        x = MaxPooling2D((2, 2), padding='same')(x)  # size = (8, 8)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
         encoded = Conv2D(128, (3, 3), activation='selu', padding='same', name='encoded')(x)
 
         # oversight
-        x = MaxPooling2D((2,2), padding='same')(encoded)  # size = (4, 4)
-        x = MaxPooling2D((2,2), padding='same')(x)  # size = (1, 1)
+        x = MaxPooling2D((2,2), padding='same')(encoded)  # size = (8, 8)
+        x = MaxPooling2D((2,2), padding='same')(x)  # size = (4, 4)
         x = Conv2D(128, (4, 4), activation='selu', padding='valid')(x)
         oversight = UpSampling2D((8,8), name='oversight')(x) # (8, 8, 128)
 
         # imap 1st deconv
-        x = MaxPooling2D((2,2), padding='same')(encoded)
+        x = MaxPooling2D((2,2), padding='same')(encoded) # size = (8, 8)
         imap_1 = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
 
         # mmap 1st deconv
-        x = MaxPooling2D((2,2), padding='same')(encoded)
+        x = MaxPooling2D((2,2), padding='same')(encoded) # size = (8, 8)
         mmap_1 = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
 
         # concatenate the three layers together
-        concat_1 = Concatenate()([oversight, imap_1, mmap_1])
+        concat_1 = Concatenate()([imap_1, mmap_1, oversight])
         # print(concat_1.shape)  # should be 128 * 3
 
         # deconv structure for imap part 1
