@@ -94,10 +94,11 @@ def main(argv):
         mmap = cv2.resize(mmap, (128, 128), interpolation=cv2.INTER_AREA)
         
         res = np.clip(imap * mmap, 0, 1)[np.newaxis, :]
-        predImap, predMmap = model.predict(res)
+        # predImap, predMmap = model.predict(res)
 
+        predImap = model.predict(res)
         # pred mmap should be result divded by twice the predicted imap
-        # predMmap = res / (predImap * 2)
+        predMmap = res / (predImap * 2)
         
         labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
 

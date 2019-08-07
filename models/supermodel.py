@@ -57,11 +57,14 @@ class SuperModel():
 
     # saves the model architecture as png
     def save_model_architecture(self, fname, path=None):
-        if not fname.endswith('.png'):
-            fname += '.png'
-        if path:
-            fname = os.path.join(path, fname)
+        try: 
+            if not fname.endswith('.png'):
+                fname += '.png'
+            if path:
+                fname = os.path.join(path, fname)
 
-        # save architecture if it doesn't exist already
-        if not os.path.isfile(fname): 
-            plot_model(self.model, to_file=fname)
+            # save architecture if it doesn't exist already
+            if not os.path.isfile(fname): 
+                plot_model(self.model, to_file=fname)
+        except OSError e:
+            print('ignored on linux dwarves', e)
