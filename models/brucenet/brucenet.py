@@ -52,23 +52,25 @@ class BruceNet(SuperModel):
         # oversight
         x = MaxPooling2D((2,2), padding='same')(encoded)  # size = (8, 8)
         x = MaxPooling2D((2,2), padding='same')(x)  # size = (4, 4)
-        x = Conv2D(128, (4, 4), activation='selu', padding='valid')(x)
+        x = Conv2D(256, (4, 4), activation='selu', padding='valid')(x)
         oversight = UpSampling2D((8,8), name='oversight')(x) # (8, 8, 128)
 
         # imap 1st deconv
         x = MaxPooling2D((2,2), padding='same')(encoded) # size = (8, 8)
-        imap_1 = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
+        imap_1 = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
 
         # mmap 1st deconv
         x = MaxPooling2D((2,2), padding='same')(encoded) # size = (8, 8)
-        mmap_1 = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
+        x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
+        mmap_1 = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
 
         # concatenate the three layers together
         concat_1 = Concatenate()([imap_1, mmap_1, oversight])
-        # print(concat_1.shape)  # should be 128 * 3
+        # print(concat_1.shape)  # should be 256 * 3
 
         # deconv structure for imap part 1
-        x = Conv2D(256, (3, 3), activation='selu', padding='same')(concat_1)
+        x = Conv2D(512, (3, 3), activation='selu', padding='same')(concat_1)
         x = Conv2D(256, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(x)
