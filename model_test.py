@@ -129,7 +129,8 @@ def main(argv):
         ax.set_ylabel('loss')
         ax.legend()
 
-        
+    # if it's Allen's computer, save the figure because matplotlib doesn't work because he doesn't have anaconda :(
+    plt.savefig("model_test.png")
 
     plt.show()
 
