@@ -129,18 +129,6 @@ def main(argv):
 
     plt.show()
 
-def custom_loss():
-    return [imap_loss, mmap_loss]
-
-def imap_loss(true_img, pred_img):
-
-    imap_diff = K.mean(K.square((0.5 * true_img) - pred_img))
-    return imap_diff
-    
-def mmap_loss(true_img, pred_img):
-    mmap_diff = K.mean(K.square(true_img - pred_img))
-    return mmap_diff
-
 def gamma_correction(img, gamma=2.2):
     # assumes that image is a floating point from 0 to 1
     inv_gamma = 1.0 / gamma
