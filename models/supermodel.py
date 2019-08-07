@@ -66,5 +66,5 @@ class SuperModel():
             # save architecture if it doesn't exist already
             if not os.path.isfile(fname): 
                 plot_model(self.model, to_file=fname)
-        except OSError e:
+        except OSError as e:
             print('ignored on linux dwarves', e)
