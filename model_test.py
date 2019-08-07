@@ -55,15 +55,10 @@ def main(argv):
     else:
         print(f"model name {model_name} not found")
         exit(-1)
-        
-    # sets the custom loss
-    custom_loss = net.custom_loss
 
-    # if model_name == 'testJanknet':
-    #     custom_loss = custom_loss()
 
     model_path = argv[2]
-    model = keras.models.load_model(model_path, custom_objects={'imap_loss': imap_loss, 'mmap_loss':mmap_loss})
+    model = keras.models.load_model(model_path, custom_objects=net.custom_loss())
 
     path_imap = argv[3]
     path_mmap = argv[4]

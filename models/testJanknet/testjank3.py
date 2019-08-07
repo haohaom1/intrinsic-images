@@ -92,17 +92,18 @@ class TestJankNet(SuperModel):
 
     def custom_loss(self):
 
-        def imap_loss(true_img, pred_img):
+        # function names should match with the names of the corresponding output layers
+        def decoded_imap(true_img, pred_img):
 
             imap_diff = K.mean(K.square((0.5 * true_img) - pred_img))
             return imap_diff
 
-        def mmap_loss(true_img, pred_img):
+        def decoded_mmap(true_img, pred_img):
 
             mmap_diff = K.mean(K.square(true_img - pred_img))
             return mmap_diff
 
-        return [imap_loss, mmap_loss]
+        return {'decoded_imap': decoded_imap, 'decoded_mmap': decoded_mmap}
         
         
     # def custom_loss(self, true_img, pred_img):

@@ -90,13 +90,24 @@ class StrongerJankNet(SuperModel):
 
 
         self.model = Model(input_img, [decoded_imap, decoded_mmap])
-        self.model.compile(optimizer='adam', loss=self.custom_loss)
+        self.model.compile(optimizer='adam', loss=self.custom_loss())
         
         
-    def custom_loss(self, true_img, pred_img):
-        imap_diff = K.mean(K.square((0.5 * true_img[0]) - pred_img[0]))
-        mmap_diff = K.mean(K.square(true_img[1] - pred_img[1]))
-        return imap_diff + mmap_diff
+    def custom_loss(self):
+
+        # function names should match with the names of the corresponding output layers
+        def decoded_imap(true_img, pred_img):
+
+            imap_diff = K.mean(K.square((0.5 * true_img) - pred_img))
+            return imap_diff
+
+        def decoded_mmap(true_img, pred_img):
+
+            mmap_diff = K.mean(K.square(true_img - pred_img))
+            return mmap_diff
+
+        return {'decoded_imap': decoded_imap, 'decoded_mmap': decoded_mmap}
+        
 
 
     

@@ -30,7 +30,7 @@ from models.testJanknet.testjank3 import TestJankNet
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128, gpu=0):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128, gpu=0, load_weights=None):
 
     # change gpu id
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
@@ -49,7 +49,10 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     input_size = (resolution, resolution, 3)
     print(f'input size: {input_size}')
+
+
     # determines model name
+    net = None
     if model_name == "janknet":
         net = JankNet(input_size=input_size)
     elif model_name == 'unet':
@@ -72,11 +75,20 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     print(f"model name is {model_name}")
     net.model.summary()
+
+    if load_weights:
+        net.load_weights(load_weights)
     
     curtime = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     # make a directory for this current instance
     new_dir = f'./models/{model_name}/instance_{curtime}'
-    os.makedirs(new_dir)
+
+    # add additional naming convention for retraining models
+    if load_weights:
+        new_dir += f'retrained_{load_weights}'
+
+    if not os.path.isdir(new_dir):
+        os.makedirs(new_dir)
 
     # checkpoint
     filepath = f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}" + ".hdf5"
@@ -193,6 +205,7 @@ if __name__ == "__main__":
     parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
     parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
+    parser.add_argument('--load_weights', '-lm', help='optionally load in model weights')
 
     args = parser.parse_args()
     args = vars(args)
