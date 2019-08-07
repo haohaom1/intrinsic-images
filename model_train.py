@@ -87,7 +87,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     # add additional naming convention for retraining models
     if load_weights:
         old_instance = re.findall('instance.+?(?=/)', load_weights)     # grabs the instance_{curtime}
-        new_dir = f'./models/{model_name}/{old_instance}'
+        new_dir = f'./models/{model_name}/retrained_{old_instance}'
 
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
