@@ -24,6 +24,7 @@ from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
 from models.testJanknet.testjank3 import TestJankNet
+from models.dualunet.dualunet import DualUNet
 
 
 def main(argv):
@@ -50,6 +51,8 @@ def main(argv):
         net = StrongerJankNet()
     elif model_name == "brucenet":
         net = BruceNet()
+    elif model_name == "dualunet":
+        net = DualUNet()
     elif model_name == 'testJanknet':
         net = TestJankNet()
     else:

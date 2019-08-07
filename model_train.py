@@ -27,6 +27,7 @@ from models.mikenet.mikenet import MikeNet
 from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
 from models.testJanknet.testjank3 import TestJankNet
+from models.dualunet.dualunet import DualUNet
 
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
@@ -68,6 +69,8 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = StrongerJankNet(input_size=input_size)
     elif model_name == "brucenet":
         net = BruceNet(input_size=input_size)
+    elif model_name == "dualunet":
+        net = DualUNet(input_size=input_size)
     elif model_name == "testJanknet":
         net = TestJankNet(input_size=input_size)
     else:
@@ -76,6 +79,9 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     print(f"model name is {model_name}")
     net.model.summary()
+
+    # saves the model architecture if doesn't exist already
+    net.save_model_architecture(model_name, path=f'./models/{model_name}')
 
     if load_weights:
         net.load_weights(load_weights)
