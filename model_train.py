@@ -14,9 +14,6 @@ import argparse
 import random
 import re
 
-# dependency for writing csvs
-# may consider just using csv package
-import csv
 
 # hardcoded
 from models.janknet.janknet_separation import JankNet
