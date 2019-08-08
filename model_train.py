@@ -29,6 +29,8 @@ from models.brucenet.brucenet import BruceNet
 from models.testJanknet.testjank3 import TestJankNet
 from models.dualunet.dualunet import DualUNet
 
+from clr_callback import CyclicLR
+
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
@@ -111,7 +113,16 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     # add a csv logger file that tracks metrics as training progresses
     csvlogger = CSVLogger(os.path.join(new_dir, f"rolling_log-{model_name}-{curtime}.csv"))
 
-    callbacks_list = [checkpoint, csvlogger]
+    # find a good learning rate if specified
+
+
+    # whether or not to use cyclic learning rates
+    if cyclic_lr:
+        clr = CyclicLR(base_lr=0.001, max_lr=0.006, step_size=2000.0, mode='triangular2')
+        callbacks_list = [checkpoint, csvlogger, clr]
+    else:
+        callbacks_list = [checkpoint, csvlogger]
+    
 
     # pass in the names of files beforehand
     # assert that the path exists
@@ -183,18 +194,14 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_gen = None,
             validation_len_data = None,
-            callbacks=callbacks_list,
-            cyclic_lr=cyclic_lr,
-            find_lr=find_lr)
+            callbacks=callbacks_list)
     else:
         # Fit the model
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_len_data = VALID_VALIDATION_LEN_DATA,
-            callbacks=callbacks_list
-            cyclic_lr=cyclic_lr
-            find_lr=find_lr)
+            callbacks=callbacks_list)
         # save the history object to a pickle file
 
     if not hist_path:
