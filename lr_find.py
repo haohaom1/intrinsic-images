@@ -81,16 +81,7 @@ class LearningRateFinder:
         self.avgLoss = (self.beta * self.avgLoss) + ((1 - self.beta) * l)
         smooth = self.avgLoss / (1 - (self.beta ** self.batchNum))
         self.losses.append(smooth)
- 
-        # compute the maximum loss stopping factor value
-        stopLoss = self.stopFactor * self.bestLoss
- 
-        # check to see whether the loss has grown too large
-        if self.batchNum > 1 and smooth > stopLoss:
-            # stop returning and return from the method
-            self.model.stop_training = True
-            return
- 
+  
         # check to see if the best loss should be updated
         if self.batchNum == 1 or smooth < self.bestLoss:
             self.bestLoss = smooth
