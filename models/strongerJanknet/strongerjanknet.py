@@ -69,6 +69,7 @@ class StrongerJankNet(SuperModel):
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = Conv2D(8, (3, 3), activation='selu', padding='same')(x)
         x = UpSampling2D((2, 2))(x)
+        # add a conv layer 8 channels
         decoded_imap = Conv2D(3, (3, 3), activation='sigmoid', padding='same', name='decoded_imap')(x)
 
         x = Conv2D(128, (3, 3), activation='selu', padding='same')(encoded)
