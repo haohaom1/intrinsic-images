@@ -1,7 +1,6 @@
 # import the necessary packages
 from keras.callbacks import LambdaCallback
 from keras import backend as K
-import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import sys, os
@@ -26,6 +25,7 @@ import data_gen
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
 matplotlib.use("Agg")
+import matplotlib.pyplot as plt
  
 class LearningRateFinder:
     def __init__(self, net, stopFactor=4, beta=0.98):
