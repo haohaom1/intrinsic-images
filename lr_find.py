@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 import sys, os
 import argparse
+import random
 
 # hardcoded
 from models.janknet.janknet_separation import JankNet
@@ -27,147 +28,141 @@ import matplotlib
 matplotlib.use("TkAgg")
  
 class LearningRateFinder:
-	def __init__(self, net, stopFactor=4, beta=0.98):
-		# store the model, stop factor, and beta value (for computing
-		# a smoothed, average loss)
-		self.net = net
+    def __init__(self, net, stopFactor=4, beta=0.98):
+        # store the model, stop factor, and beta value (for computing
+        # a smoothed, average loss)
+        self.net = net
         self.model = self.net.model
-		self.stopFactor = stopFactor
-		self.beta = beta
+        self.stopFactor = stopFactor
+        self.beta = beta
  
-		# initialize our list of learning rates and losses,
-		# respectively
-		self.lrs = []
-		self.losses = []
+        # initialize our list of learning rates and losses,
+        # respectively
+        self.lrs = []
+        self.losses = []
  
-		# initialize our learning rate multiplier, average loss, best
-		# loss found thus far, current batch number, and weights file
-		self.lrMult = 1
-		self.avgLoss = 0
-		self.bestLoss = 1e9
-		self.batchNum = 0
+        # initialize our learning rate multiplier, average loss, best
+        # loss found thus far, current batch number, and weights file
+        self.lrMult = 1
+        self.avgLoss = 0
+        self.bestLoss = 1e9
+        self.batchNum = 0
 
-	def reset(self):
-		# re-initialize all variables from our constructor
-		self.lrs = []
-		self.losses = []
-		self.lrMult = 1
-		self.avgLoss = 0
-		self.bestLoss = 1e9
-		self.batchNum = 0
+    def reset(self):
+        # re-initialize all variables from our constructor
+        self.lrs = []
+        self.losses = []
+        self.lrMult = 1
+        self.avgLoss = 0
+        self.bestLoss = 1e9
+        self.batchNum = 0
 
 
     def is_data_iter(self, data):
-		# define the set of class types we will check for
-		iterClasses = ["NumpyArrayIterator", "DirectoryIterator",
-			 "DataFrameIterator", "Iterator", "Sequence"]
+        # define the set of class types we will check for
+        iterClasses = ["NumpyArrayIterator", "DirectoryIterator",
+             "DataFrameIterator", "Iterator", "Sequence"]
  
-		# return whether our data is an iterator
-		return data.__class__.__name__ in iterClasses
+        # return whether our data is an iterator
+        return data.__class__.__name__ in iterClasses
 
 
     def on_batch_end(self, batch, logs):
-		# grab the current learning rate and add log it to the list of
-		# learning rates that we've tried
-		lr = K.get_value(self.model.optimizer.lr)
-		self.lrs.append(lr)
+        # grab the current learning rate and add log it to the list of
+        # learning rates that we've tried
+        lr = K.get_value(self.model.optimizer.lr)
+        self.lrs.append(lr)
  
-		# grab the loss at the end of this batch, increment the total
-		# number of batches processed, compute the average average
-		# loss, smooth it, and update the losses list with the
-		# smoothed value
-		l = logs["loss"]
-		self.batchNum += 1
-		self.avgLoss = (self.beta * self.avgLoss) + ((1 - self.beta) * l)
-		smooth = self.avgLoss / (1 - (self.beta ** self.batchNum))
-		self.losses.append(smooth)
+        # grab the loss at the end of this batch, increment the total
+        # number of batches processed, compute the average average
+        # loss, smooth it, and update the losses list with the
+        # smoothed value
+        l = logs["loss"]
+        self.batchNum += 1
+        self.avgLoss = (self.beta * self.avgLoss) + ((1 - self.beta) * l)
+        smooth = self.avgLoss / (1 - (self.beta ** self.batchNum))
+        self.losses.append(smooth)
  
-		# compute the maximum loss stopping factor value
-		stopLoss = self.stopFactor * self.bestLoss
+        # compute the maximum loss stopping factor value
+        stopLoss = self.stopFactor * self.bestLoss
  
-		# check to see whether the loss has grown too large
-		if self.batchNum > 1 and smooth > stopLoss:
-			# stop returning and return from the method
-			self.model.stop_training = True
-			return
+        # check to see whether the loss has grown too large
+        if self.batchNum > 1 and smooth > stopLoss:
+            # stop returning and return from the method
+            self.model.stop_training = True
+            return
  
-		# check to see if the best loss should be updated
-		if self.batchNum == 1 or smooth < self.bestLoss:
-			self.bestLoss = smooth
+        # check to see if the best loss should be updated
+        if self.batchNum == 1 or smooth < self.bestLoss:
+            self.bestLoss = smooth
  
-		# increase the learning rate
-		lr *= self.lrMult
-		K.set_value(self.model.optimizer.lr, lr)
+        # increase the learning rate
+        lr *= self.lrMult
+        K.set_value(self.model.optimizer.lr, lr)
 
-    def find(self, gen, startLR, endLR, epochs=None,
-		stepsPerEpoch=None, batchSize=32, sampleSize=2048,
-		verbose=1):
-		# reset our class-specific variables
-		self.reset()
+    def find(self, gen, startLR, endLR, epochs,
+        steps_per_epoch, batchSize=64,
+        verbose=1):
+        # reset our class-specific variables
+        self.reset()
   
-		# if we're using a generator and the steps per epoch is not
-		# supplied, raise an error
-		if stepsPerEpoch is None:
-			msg = "Using generator without supplying stepsPerEpoch"
-			raise Exception(msg)
-  
-		# if no number of training epochs are supplied, compute the
-		# training epochs based on a default sample size
-		if epochs is None:
-			epochs = int(np.ceil(sampleSize / float(stepsPerEpoch)))
+        # if we're using a generator and the steps per epoch is not
+        # supplied, raise an error
+        if steps_per_epoch is None:
+            msg = "Using generator without supplying stepsPerEpoch"
+            raise Exception(msg)
 
         # compute the total number of batch updates that will take
-		# place while we are attempting to find a good starting
-		# learning rate
-		numBatchUpdates = epochs * stepsPerEpoch
+        # place while we are attempting to find a good starting
+        # learning rate
+        numBatchUpdates = epochs * steps_per_epoch
  
-		# derive the learning rate multiplier based on the ending
-		# learning rate, starting learning rate, and total number of
-		# batch updates
-		self.lrMult = (endLR / startLR) ** (1.0 / numBatchUpdates)
+        # derive the learning rate multiplier based on the ending
+        # learning rate, starting learning rate, and total number of
+        # batch updates
+        self.lrMult = (endLR / startLR) ** (1.0 / numBatchUpdates)
  
-		# grab the *original* learning rate (so we can reset it
-		# later), and then set the *starting* learning rate
-		origLR = K.get_value(self.model.optimizer.lr)
-		K.set_value(self.model.optimizer.lr, startLR)
+        # grab the *original* learning rate (so we can reset it
+        # later), and then set the *starting* learning rate
+        origLR = K.get_value(self.model.optimizer.lr)
+        K.set_value(self.model.optimizer.lr, startLR)
 
         # construct a callback that will be called at the end of each
-		# batch, enabling us to increase our learning rate as training
-		# progresses
-		callback = LambdaCallback(on_batch_end=lambda batch, logs:
-			self.on_batch_end(batch, logs))
+        # batch, enabling us to increase our learning rate as training
+        # progresses
+        callback = LambdaCallback(on_batch_end=lambda batch, logs:
+            self.on_batch_end(batch, logs))
  
-		# check to see if we are using a data iterator
+        # check to see if we are using a data iterator
         self.model.fit_generator(
             gen,
-            steps_per_epoch = len_data / batch_size,
+            steps_per_epoch = steps_per_epoch,
             epochs=epochs,
             verbose=verbose,
             callbacks=[callback])
   
-		# restore the original model weights and learning rate
-		self.model.load_weights(self.weightsFile)
-		K.set_value(self.model.optimizer.lr, origLR)
+        # restore the original model weights and learning rate
+        self.model.load_weights(self.weightsFile)
+        K.set_value(self.model.optimizer.lr, origLR)
 
     def plot_loss(self, skipBegin=10, skipEnd=1, title="lr finder"):
-		# grab the learning rate and losses values to plot
-		lrs = self.lrs[skipBegin:-skipEnd]
-		losses = self.losses[skipBegin:-skipEnd]
+        # grab the learning rate and losses values to plot
+        lrs = self.lrs[skipBegin:-skipEnd]
+        losses = self.losses[skipBegin:-skipEnd]
  
-		# plot the learning rate vs. loss
-		plt.plot(lrs, losses)
-		plt.xscale("log")
-		plt.xlabel("Learning Rate (Log Scale)")
-		plt.ylabel("Loss")
+        # plot the learning rate vs. loss
+        plt.plot(lrs, losses)
+        plt.xscale("log")
+        plt.xlabel("Learning Rate (Log Scale)")
+        plt.ylabel("Loss")
  
-		# if the title is not empty, add it to the plot
-		if title != "":
-			plt.title(title)
+        # if the title is not empty, add it to the plot
+        if title != "":
+            plt.title(title)
 
 def main(path_imap, path_mmap, batch_size, 
-num_epochs, num_imaps_per_mmap, 
-ground_truth="", inputs_to_network="",
-model_name, resolution=128, gpu=0):
+    num_epochs, num_imaps_per_mmap, model_name,
+    ground_truth="imap,mmap", inputs_to_network="result", resolution=128, gpu=0):
 
     # change gpu id
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
@@ -215,7 +210,6 @@ model_name, resolution=128, gpu=0):
 
     lrf = LearningRateFinder(net)
 
-
     imap_files = [x for x in os.listdir(path_imap) if x.endswith('npy')]
     mmap_files = [x for x in os.listdir(path_mmap) if x.endswith('npy')]
 
@@ -240,33 +234,32 @@ model_name, resolution=128, gpu=0):
     random.shuffle(imap_files)
     random.shuffle(mmap_files)
 
-    VALID_LEN_DATA = train_len_data - train_len_data % batch_size
+    train_len_data = LEN_DATA
 
+    VALID_LEN_DATA = train_len_data - train_len_data % batch_size
 
     print("[model_train.py] number of samples of training data", VALID_LEN_DATA)
 
     # make the training data the length of valid_len_data
-    imap_files_train = imap_files_train[:VALID_LEN_DATA]
-    mmap_files_train = mmap_files_train[:VALID_LEN_DATA]
+    imap_files_train = imap_files[:VALID_LEN_DATA]
+    mmap_files_train = mmap_files[:VALID_LEN_DATA]
 
     assert(len(imap_files_train) == len(mmap_files_train))
     assert(len(imap_files_train) == VALID_LEN_DATA)
 
-    # number of batch updates
-    batch_updates_per_epoch = VALID_LEN_DATA / batch_size
-
     gen = data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution)
 
-	lrf.find(
-		gen,
-		1e-10, 1e1,
-		stepsPerEpoch=steps_per_epoch,
-		batchSize=config.BATCH_SIZE)
+    lrf.find(
+        gen,
+        1e-10, 1e1,
+        num_epochs,
+        VALID_LEN_DATA / batch_size,
+        batchSize=batch_size)
  
-	# plot the loss for the various learning rates and save the
-	# resulting plot to disk
-	lrf.plot_loss()
-	plt.savefig("lr_find.png")
+    # plot the loss for the various learning rates and save the
+    # resulting plot to disk
+    lrf.plot_loss()
+    plt.savefig("lr_find.png")
 
 
 if __name__ == "__main__":
@@ -277,7 +270,12 @@ if __name__ == "__main__":
     parser.add_argument('num_epochs', help='number of epochs to find lr for', default=5, type=int)
     parser.add_argument('num_imaps_per_mmap', help="number of imaps per mmap - irrelevant if in train mode", type=int, default=5)
     parser.add_argument('model_name', help="the name of the model")
-    parser.add_argument('--inputs_to_network', '-i', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
-    parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str)
+    parser.add_argument('--inputs_to_network', '-i', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str, default="result")
+    parser.add_argument('--ground_truth', '-g', help='if this argument is specified, pass in a string of image types [ambient, direct, imap, mmap, result] delimited by commas', type=str, default="imap,mmap")
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
     parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
+
+    args = parser.parse_args()
+    args = vars(args)
+
+    main(**args)
