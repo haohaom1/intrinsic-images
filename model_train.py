@@ -32,7 +32,10 @@ from models.dualunet.dualunet import DualUNet
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128, gpu=0, load_weights=None):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, 
+    hist_path=None, validation_split=0.2, no_validation=False, 
+    inputs_to_network="", ground_truth="", resolution=128, 
+    gpu=0, load_weights=None, find_lr=False, clr=False):
 
     # change gpu id
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
@@ -180,14 +183,18 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_gen = None,
             validation_len_data = None,
-            callbacks=callbacks_list)
+            callbacks=callbacks_list,
+            cyclic_lr=cyclic_lr,
+            find_lr=find_lr)
     else:
         # Fit the model
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_gen = data_gen.generator(imap_files_validation, mmap_files_validation, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
             validation_len_data = VALID_VALIDATION_LEN_DATA,
-            callbacks=callbacks_list)
+            callbacks=callbacks_list
+            cyclic_lr=cyclic_lr
+            find_lr=find_lr)
         # save the history object to a pickle file
 
     if not hist_path:
@@ -214,6 +221,8 @@ if __name__ == "__main__":
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
     parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
     parser.add_argument('--load_weights', '-lm', help='optionally load in model weights')
+    parser.add_argument('--find_lr', '-flr', help='finds a good learning rate', type=bool, action='store_true')
+    parser.add_argument('--cyclic_lr', '-clr', help='uses cyclic learning rate policy to train network - note that it always uses the "decreasing triangular policy', type=bool, action='store_true')
 
     args = parser.parse_args()
     args = vars(args)
