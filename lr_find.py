@@ -25,7 +25,7 @@ import data_gen
 
 # set the matplotlib backend so figures can be saved in the background
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use("Agg")
  
 class LearningRateFinder:
     def __init__(self, net, stopFactor=4, beta=0.98):
@@ -152,6 +152,8 @@ class LearningRateFinder:
         if title != "":
             plt.title(title)
 
+        plt.savefig("lr_find.png")
+
 def main(path_imap, path_mmap, batch_size, 
     num_epochs, num_imaps_per_mmap, model_name,
     ground_truth="imap,mmap", inputs_to_network="result", resolution=128, gpu=0):
@@ -251,7 +253,6 @@ def main(path_imap, path_mmap, batch_size,
     # plot the loss for the various learning rates and save the
     # resulting plot to disk
     lrf.plot_loss()
-    plt.savefig("lr_find.png")
 
 
 if __name__ == "__main__":
