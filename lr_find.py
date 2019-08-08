@@ -42,7 +42,6 @@ class LearningRateFinder:
         self.losses = []
  
         # initialize our learning rate multiplier, average loss, best
-        # loss found thus far, current batch number, and weights file
         self.lrMult = 1
         self.avgLoss = 0
         self.bestLoss = 1e9
@@ -122,9 +121,6 @@ class LearningRateFinder:
         # batch updates
         self.lrMult = (endLR / startLR) ** (1.0 / numBatchUpdates)
  
-        # grab the *original* learning rate (so we can reset it
-        # later), and then set the *starting* learning rate
-        origLR = K.get_value(self.model.optimizer.lr)
         K.set_value(self.model.optimizer.lr, startLR)
 
         # construct a callback that will be called at the end of each
@@ -140,10 +136,6 @@ class LearningRateFinder:
             epochs=epochs,
             verbose=verbose,
             callbacks=[callback])
-  
-        # restore the original model weights and learning rate
-        self.model.load_weights(self.weightsFile)
-        K.set_value(self.model.optimizer.lr, origLR)
 
     def plot_loss(self, skipBegin=10, skipEnd=1, title="lr finder"):
         # grab the learning rate and losses values to plot
