@@ -70,11 +70,20 @@ Illumination map * Material Map = Final Image
 
 # Results
 
-We tried a variety of networks, including varieties of Deep CNN, [UNet](https://arxiv.org/pdf/1505.04597.pdf). For our networks, we feed in the Final Image, and the network produces the Illumination  Map and the Material Map.
+We tried a variety of networks, including varieties of Deep CNN, and [UNet](https://arxiv.org/pdf/1505.04597.pdf). For our networks, we feed in the Final Image, and the network produces the Illumination  Map and the Material Map.
 
-Our best results feature a two headed UNet, which we coined dUalUnet. It is essentially a modification of the UNet architecture that allows it to predict two images instead of one.
+Our best results feature a two headed UNet, which we coined DualUNet. It is essentially a modification of the UNet architecture that allows it to predict two images instead of one.
 
 We also trained up a simple CNN as a baseline. As we can see, a simpler network can pick up most of the Material Maps, but has trouble with the Illumination Maps
+
+> DualUNet
+
+<div style="display: block; float: left; margin-top: 20px; margin-bottom: 20px;">
+    <img src="./model_test.png" width="150" height="150"> 
+    <img src="./model_test2.png" width="150" height="150"> 
+    <img src="./model_test3.png" width="150" height="150"> 
+<div class="clear"></div>
+</div>
 
 # Future Endeavors
 
