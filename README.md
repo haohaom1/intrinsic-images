@@ -22,7 +22,7 @@ Casey Smith
 
 # Explanation of data directory
 
-Our database contains both synthetic and real images of illumination maps and material maps. The synthetic illumination images are generated from stripes, fractal, perlin, and random noises. The synthetic material maps are generated from [...]. The real images are generated from [...]
+Our database contains both synthetic and real images of illumination maps and material maps. The synthetic illumination images are generated from stripes, fractal, perlin, and random noises. The synthetic material maps are generated from random polygons stitched together. The real images are taken with a Nikon camera in RAW mode.
 
 Here is a more detailed overhead of our database structure
 
@@ -67,3 +67,15 @@ Ambient Illumination map + Direct Illumination Map = Illumination map
 </div>
 
 Illumination map * Material Map = Final Image
+
+# Results
+
+We tried a variety of networks, including varieties of Deep CNN, [UNet](https://arxiv.org/pdf/1505.04597.pdf). For our networks, we feed in the Final Image, and the network produces the Illumination  Map and the Material Map.
+
+Our best results feature a two headed UNet, which we coined dUalUnet. It is essentially a modification of the UNet architecture that allows it to predict two images instead of one.
+
+We also trained up a simple CNN as a baseline. As we can see, a simpler network can pick up most of the Material Maps, but has trouble with the Illumination Maps
+
+# Future Endeavors
+
+Currently, we only trained the networks in linear space. We theorized that using log space, the networks will train better. We also theorized that networks will train better using RAW mode instead of JPEGs
