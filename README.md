@@ -76,12 +76,12 @@ Our best results feature a two headed UNet, which we coined DualUNet. It is esse
 
 We also trained up a simple CNN as a baseline. As we can see, a simpler network can pick up most of the Material Maps, but has trouble with the Illumination Maps
 
-> DualUNet
+### DualUNet
 
 <div style="display: block; float: left; margin-top: 20px; margin-bottom: 20px;">
-    <img src="./model_test.png" width="150" height="150"> 
-    <img src="./model_test2.png" width="150" height="150"> 
-    <img src="./model_test3.png" width="150" height="150"> 
+    <img src="./sample_data/extra/dualunet1.png" width="250" height="250"> 
+    <img src="./sample_data/extra/dualunet2.png" width="250" height="250"> 
+    <img src="./sample_data/extra/dualunet3.png" width="250" height="250"> 
 <div class="clear"></div>
 </div>
 
