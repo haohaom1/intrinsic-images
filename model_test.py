@@ -100,7 +100,7 @@ def main(argv):
         # predImap = model.predict(res)
         # predMmap = res / (predImap * 2)   # pred mmap should be result divded by twice the predicted imap
         
-        labels = ['mmap', 'imap', 'result', 'predImap', 'predMmap']
+        labels = ['imap', 'mmap', 'result', 'predImap', 'predMmap']
 
         # NOTE
         # imap is shown to be divided by 2 because it is between 0-2
