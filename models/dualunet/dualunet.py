@@ -122,7 +122,7 @@ class DualUNet(SuperModel):
         self.model = Model(inputs=[input_img], outputs=[output_imap, output_mmap])
 
         # compile the model with a loss function
-        self.model.compile(optimizer='adam', loss=self.custom_loss())
+        self.model.compile(optimizer='adam', loss=self.custom_loss(), loss_weights={'decoded_imap': 0.7, 'decoded_mmap': 0.3})
 
 
     def custom_loss(self):
