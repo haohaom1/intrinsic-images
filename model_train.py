@@ -14,9 +14,6 @@ import argparse
 import random
 import re
 
-# dependency for writing csvs
-# may consider just using csv package
-import csv
 
 # hardcoded
 from models.janknet.janknet_separation import JankNet
@@ -29,10 +26,15 @@ from models.brucenet.brucenet import BruceNet
 from models.testJanknet.testjank3 import TestJankNet
 from models.dualunet.dualunet import DualUNet
 
+from clr_callback import CyclicLR
+
 # hardcoded training log file
 TRAINING_LOG_PATH = "./models/training_log.csv"
 
-def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, hist_path=None, validation_split=0.2, no_validation=False, inputs_to_network="", ground_truth="", resolution=128, gpu=0, load_weights=None):
+def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, 
+    hist_path=None, validation_split=0.2, no_validation=False, 
+    inputs_to_network="result", ground_truth="imap,mmap", resolution=128, 
+    gpu=0, load_weights=None, cyclic_lr=False, base_lr=1e-3, max_lr=6e-3):
 
     # change gpu id
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
@@ -81,7 +83,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     net.model.summary()
 
     # saves the model architecture if doesn't exist already
-    net.save_model_architecture(model_name, path=f'./models/{model_name}')
+    # net.save_model_architecture(model_name, path=f'./models/{model_name}')
 
     if load_weights:
         net.load_weights(load_weights)
@@ -97,18 +99,6 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
-
-    # checkpoint
-    filepath = f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}" + ".hdf5"
-
-    full_filepath = os.path.join(new_dir, filepath)
-    # this checkpoint only saves losses that have improved
-    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-
-    # add a csv logger file that tracks metrics as training progresses
-    csvlogger = CSVLogger(os.path.join(new_dir, f"rolling_log-{model_name}-{curtime}.csv"))
-
-    callbacks_list = [checkpoint, csvlogger]
 
     # pass in the names of files beforehand
     # assert that the path exists
@@ -174,7 +164,36 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
 
     assert(len(imap_files_validation) == VALID_VALIDATION_LEN_DATA)
     assert(len(imap_files_train) == VALID_LEN_DATA)
-    
+
+    # number of batch updates
+    batch_updates_per_epoch = VALID_LEN_DATA / batch_size
+
+    ####### SETUP CALLBACKS
+
+
+    # checkpoint
+    filepath = f"weights-{model_name}" + "-{epoch:02d}-{loss:.2f}" + ".hdf5"
+
+    full_filepath = os.path.join(new_dir, filepath)
+    # this checkpoint only saves losses that have improved
+    checkpoint = ModelCheckpoint(full_filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
+
+    # add a csv logger file that tracks metrics as training progresses
+    csvlogger = CSVLogger(os.path.join(new_dir, f"rolling_log-{model_name}-{curtime}.csv"))
+
+    # find a good learning rate if specified
+
+    # whether or not to use cyclic learning rates
+    # step size is the number of batch_updates per half cycle
+    # Leslie Smith (author of cyclic policy paper suggests 2-8 * number of batch_updates), here we choose 4
+    if cyclic_lr:
+        clr = CyclicLR(base_lr=base_lr, max_lr=max_lr, step_size= 4 * batch_updates_per_epoch, mode='triangular2')
+        callbacks_list = [checkpoint, csvlogger, clr]
+    else:
+        callbacks_list = [checkpoint, csvlogger]
+
+    ###### CALL TRAIN
+
     if no_validation:
         history_obj = net.train(VALID_LEN_DATA, batch_size, num_epochs, 
             data_gen.generator(imap_files_train, mmap_files_train, path_mmap, path_imap, inputs_to_network, ground_truth, batch_size=batch_size, resolution=resolution),
@@ -214,6 +233,9 @@ if __name__ == "__main__":
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
     parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
     parser.add_argument('--load_weights', '-lm', help='optionally load in model weights')
+    parser.add_argument('--cyclic_lr', '-clr', help='uses cyclic learning rate policy to train network - note that it always uses the "decreasing triangular policy', action='store_true')
+    parser.add_argument('--base_lr', '-blr', help='base LR for cyclic policy; if cyclic policy is False, then this parameter is irrelevant', type=float)
+    parser.add_argument('--max_lr', '-mlr', help='max LR for cyclic policy; if cyclic policy is False, then this parameter is irrelevant', type=float)
 
     args = parser.parse_args()
     args = vars(args)
