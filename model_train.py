@@ -83,7 +83,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
     net.model.summary()
 
     # saves the model architecture if doesn't exist already
-    net.save_model_architecture(model_name, path=f'./models/{model_name}')
+    # net.save_model_architecture(model_name, path=f'./models/{model_name}')
 
     if load_weights:
         net.load_weights(load_weights)
