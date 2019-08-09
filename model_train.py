@@ -233,7 +233,7 @@ if __name__ == "__main__":
     parser.add_argument('--resolution', '-r', help='the size of the input image', type=int, default=128)
     parser.add_argument('--gpu', help='which gpu to use', type=int, default=0)
     parser.add_argument('--load_weights', '-lm', help='optionally load in model weights')
-    parser.add_argument('--cyclic_lr', '-clr', help='uses cyclic learning rate policy to train network - note that it always uses the "decreasing triangular policy', type=bool, action='store_true')
+    parser.add_argument('--cyclic_lr', '-clr', help='uses cyclic learning rate policy to train network - note that it always uses the "decreasing triangular policy', action='store_true')
     parser.add_argument('--base_lr', '-blr', help='base LR for cyclic policy; if cyclic policy is False, then this parameter is irrelevant', type=float)
     parser.add_argument('--max_lr', '-mlr', help='max LR for cyclic policy; if cyclic policy is False, then this parameter is irrelevant', type=float)
 
