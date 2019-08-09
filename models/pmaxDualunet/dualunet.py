@@ -35,7 +35,7 @@ class PmaxDualUNet(DualUNet):
 
     def __init__(self, input_size=(128, 128, 3)):
         self.input_img = Input(shape=input_size)
-        super.__init__(input_size=input_size)
+        super().__init__(input_size=input_size)
 
     def custom_loss(self):
         # function names should match with the names of the corresponding output layers
