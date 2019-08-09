@@ -74,7 +74,7 @@ def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per
         net = BruceNet(input_size=input_size)
     elif model_name == "dualunet":
         net = DualUNet(input_size=input_size)
-    elif model_name == "pmaxdualnet":
+    elif model_name == "pmaxdualunet":
         net = PmaxDualUNet(input_size=input_size)
     elif model_name == "testJanknet":
         net = TestJankNet(input_size=input_size)

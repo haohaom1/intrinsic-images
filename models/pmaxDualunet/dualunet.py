@@ -41,6 +41,9 @@ class PmaxDualUNet(DualUNet):
         # function names should match with the names of the corresponding output layers
         # uses pixel max loss as a scale
 
+        # intuition: mmap should never be darker than the result
+        # material map - orig image, only sum up positive terms
+
         # finds max intensity, assumes color channel is last
         idx = K.argmax(K.flatten(K.mean(self.input_img, axis=-1)))
         pmax = K.flatten(K.mean(self.input_img, axis=-1))[idx]         # max intensity, a number

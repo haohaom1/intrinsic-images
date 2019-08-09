@@ -17,6 +17,7 @@ from models.strongerJanknet.strongerjanknet import StrongerJankNet
 from models.brucenet.brucenet import BruceNet
 from models.testJanknet.testjank3 import TestJankNet
 from models.dualunet.dualunet import DualUNet
+from models.pmaxDualunet.dualunet import PmaxDualUNet
 
 import data_gen
 
@@ -185,6 +186,8 @@ def main(path_imap, path_mmap, batch_size,
         net = BruceNet(input_size=input_size)
     elif model_name == "dualunet":
         net = DualUNet(input_size=input_size)
+    elif model_name == "pmaxdualunet":
+        net = PmaxDualUNet(input_size=input_size)
     elif model_name == "testJanknet":
         net = TestJankNet(input_size=input_size)
     else:
