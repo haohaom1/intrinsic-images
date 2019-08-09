@@ -34,7 +34,7 @@ TRAINING_LOG_PATH = "./models/training_log.csv"
 def main(path_imap, path_mmap, batch_size, num_epochs, model_name, num_imaps_per_mmap, 
     hist_path=None, validation_split=0.2, no_validation=False, 
     inputs_to_network="result", ground_truth="imap,mmap", resolution=128, 
-    gpu=0, load_weights=None, clr=False, base_lr=1e-3, max_lr=6e-3):
+    gpu=0, load_weights=None, cyclic_lr=False, base_lr=1e-3, max_lr=6e-3):
 
     # change gpu id
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
