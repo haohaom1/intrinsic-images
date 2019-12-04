@@ -2,9 +2,11 @@
 
 - The overall goal of our summer research is to determine whether raw images perform better at the task of intrinsic image decomposition
 
-- We define an intrinsic image as follows, definition from [here](http://www-oldurls.inf.ethz.ch/personal/pomarc/courses/CompPhoto/cpv07.pdf)
-    - the illumination map is the lighting having irrespective of surface material?
-    - what is the surface reflectance, irrespective of lighting?
+- We use the definition of an intrinsic image from [here](http://www-oldurls.inf.ethz.ch/personal/pomarc/courses/CompPhoto/cpv07.pdf)
+
+- The working definition we have of an *intrinsic image* is as follows:
+    - the illumination map (first of two parts of an intrinsic image) is the lighting, irrespective of surface material
+    - the material map (second part of an intrinsic image) is the surface reflectance, irrespective of lighting
 
 Work sponsored by Colby College Computer Science Department
 
