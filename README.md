@@ -83,7 +83,7 @@ We also trained up a simple CNN as a baseline. As we can see, a simpler network 
 <div style="display: block; float: left; margin-top: 20px; margin-bottom: 20px;">
 <!--     <img src="./sample_data/extra/dualunet1.png" width="250" height="250">  -->
 <!--     <img src="./sample_data/extra/dualunet2.png" width="250" height="250">  -->
-    <img src="./sample_data/extra/dualunet3.png" width="750" height="750"> 
+    <img src="./sample_data/extra/dualunet4.png" width="750" height="750"> 
 <div class="clear"></div>
 </div>
 
